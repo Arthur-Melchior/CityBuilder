@@ -14,3 +14,4 @@ add_custom_target(copy_assets ALL
 
 add_executable(CityBuilder main.cpp)
 target_link_libraries(CityBuilder PRIVATE API Game)
+add_dependencies(CityBuilder copy_assets)

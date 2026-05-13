@@ -5,4 +5,6 @@
 #ifndef CITYBUILDER_GAME_H
 #define CITYBUILDER_GAME_H
 
+void StartGame();
+
 #endif  // CITYBUILDER_GAME_H

@@ -3,3 +3,8 @@
 //
 
 #include "../include/game.h"
+#include "../../API/graphics/include/renderer.h"
+
+void StartGame() {
+  citybuilder::graphics::startRender();
+}
