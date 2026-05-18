@@ -4,16 +4,34 @@
 
 #ifndef CITYBUILDER_TILE_H
 #define CITYBUILDER_TILE_H
+
+#include <array>
+
 namespace citybuilder::game {
 
 class Tile {
  public:
-  int position[2];
-  int texture_coords[4];
+  Tile(const std::array<float, 2> position,
+       const std::array<float, 2> texture_coords)
+      : position_(position),
+        texture_coords_(texture_coords) {
+  }
+
+  [[nodiscard]] std::array<float, 2> GetPosition() const {
+    return position_;
+  }
+
+  [[nodiscard]] std::array<float, 2> GetTextureCoords() const {
+    return texture_coords_;
+  }
+
+ private:
+  std::array<float, 2> position_;
+  std::array<float, 2> texture_coords_;
 };
 
 //resource ?
 
-} // namespace citybuilder::game
+}  // namespace citybuilder::game
 
 #endif  // CITYBUILDER_TILE_H

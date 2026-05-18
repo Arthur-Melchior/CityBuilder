@@ -11,12 +11,25 @@
 
 namespace citybuilder::graphics {
 
-class Renderer;
+class Renderer {
+ public:
+  Renderer(unsigned int width, unsigned int height, const std::string& name)
+      : window_(sf::VideoMode ({width, height}), name) {}
 
-//open window
-//poll events / handle events
-//divide visuals into vertex arrays
+  void FirstRender(const std::vector<game::Tile>& tiles);
+  void Render();
 
-} // namespace citybuilder::graphics
+ private:
+  sf::RenderWindow window_;
+  sf::Texture background_texture_;
+  std::vector<sf::Vertex> background_tiles_;
+  float tile_size_ = 32;
+};
+
+// open window
+// poll events / handle events
+// divide visuals into vertex arrays
+
+}  // namespace citybuilder::graphics
 
 #endif  // CITYBUILDER_RENDERER_H
