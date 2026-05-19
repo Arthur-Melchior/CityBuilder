@@ -64,9 +64,10 @@ void Renderer::Render() {
       }
     }
 
-    window_.clear();
+    window_.clear(sf::Color::Black);
     window_.draw(background_tiles_.data(), background_tiles_.size(),
                  sf::PrimitiveType::Triangles, states);
+    window_.display();
   }
 }
 
