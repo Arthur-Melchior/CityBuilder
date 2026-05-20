@@ -31,7 +31,6 @@ void Renderer::FirstRender(const std::vector<game::Tile>& tiles) {
     const auto tex_y_1 = static_cast<float>(texture_coords[1]) * texture_size_;
     const auto tex_y_2 = (texture_coords[1] + 1) * texture_size_;
 
-
     background_tiles_.push_back(
         sf::Vertex{{x, y}, sf::Color::White, {tex_x_1, tex_y_1}});
     background_tiles_.push_back(
@@ -48,6 +47,7 @@ void Renderer::FirstRender(const std::vector<game::Tile>& tiles) {
 
   Render();
 }
+
 void Renderer::Render() {
   sf::RenderStates states;
   sf::View view({32 * 200.f, 32 * 200.f}, {300.f, 200.f});
