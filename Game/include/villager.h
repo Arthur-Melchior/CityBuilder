@@ -4,10 +4,15 @@
 
 #ifndef CITYBUILDER_VILLAGER_H
 #define CITYBUILDER_VILLAGER_H
+#include <array>
 
 namespace citybuilder::game {
 
-class Villager;
+class Villager {
+public:
+  float happiness;
+  std::array<int,2> position;
+};
 
 //happiness
 //position

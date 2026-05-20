@@ -5,6 +5,7 @@ set(SOURCES
         graphics/src/renderer.cc
         graphics/include/renderer.h
         graphics/include/display_box.h
+        graphics/include/fast_noise_lite.h
 )
 
 add_library(API STATIC ${SOURCES})

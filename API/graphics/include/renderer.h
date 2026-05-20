@@ -20,10 +20,24 @@ class Renderer {
   void Render();
 
  private:
+  //references
   sf::RenderWindow window_;
   sf::Texture background_texture_;
-  std::vector<sf::Vertex> background_tiles_;
+
+  //tile stuff
   float tile_size_ = 32;
+  float texture_size_ = 512;
+  std::vector<sf::Vertex> background_tiles_;
+
+  //mouse stuff
+  sf::Vector2<int> previous_mouse_position_ = {0,0};
+  sf::Vector2<int> current_mouse_position_ = {0,0};
+
+  //zoom stuff
+  float current_zoom_ = 1;
+  float zoom_interval_ = 10;
+  float min_zoom_ = 0.3f;
+  float max_zoom_ = 3.f;
 };
 
 // open window
