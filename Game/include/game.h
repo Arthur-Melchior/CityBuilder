@@ -4,19 +4,28 @@
 
 #ifndef CITYBUILDER_GAME_H
 #define CITYBUILDER_GAME_H
+#include <complex.h>
+
+#include <random>
+#include <vector>
+
+#include "random_generator.h"
+#include "tile.h"
 
 namespace citybuilder::game {
 
 class Game {
  public:
-  Game(const int ntw, const int nth)
-      : number_tiles_width_(ntw), number_tiles_height_(nth) {}
+  Game(const int world_size_width, const int world_size_height)
+      : world_size_width_(world_size_width), world_size_height_(world_size_height) {}
 
+  std::vector<Tile> GenerateRandomTiles() const;
   void StartGame() const;
 
  private:
-  int number_tiles_width_;
-  int number_tiles_height_;
+  int world_size_width_;
+  int world_size_height_;
+  RandomGenerator random_generator_ = RandomGenerator();
 };
 
 // load title screen

@@ -37,7 +37,7 @@ class Renderer {
   float current_zoom_ = 1;
   float zoom_interval_ = 10;
   float min_zoom_ = 0.3f;
-  float max_zoom_ = 3.f;
+  float max_zoom_ = 5.f;
 };
 
 // open window

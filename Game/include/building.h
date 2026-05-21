@@ -4,8 +4,16 @@
 
 #ifndef CITYBUILDER_BUILDING_H
 #define CITYBUILDER_BUILDING_H
+#include <array>
 
 namespace citybuilder::game {
+
+class Building {
+public:
+  std::array<int,2> position;
+  int size_x;
+  int size_y;
+};
 
 //cost
 //position

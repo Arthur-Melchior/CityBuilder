@@ -9,25 +9,17 @@
 
 namespace citybuilder::game {
 
-class Tile {
- public:
+struct Tile {
   Tile(const std::array<float, 2> position,
        const std::array<float, 2> texture_coords)
-      : position_(position),
-        texture_coords_(texture_coords) {
+      : position(position),
+        texture_coords(texture_coords) {
   }
 
-  [[nodiscard]] std::array<float, 2> GetPosition() const {
-    return position_;
-  }
+  std::array<float, 2> position;
+  std::array<float, 2> texture_coords;
 
-  [[nodiscard]] std::array<float, 2> GetTextureCoords() const {
-    return texture_coords_;
-  }
-
- private:
-  std::array<float, 2> position_;
-  std::array<float, 2> texture_coords_;
+  bool is_walkable = false;
 };
 
 //resource ?

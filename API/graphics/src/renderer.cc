@@ -6,7 +6,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-#include <iostream>
 #include <optional>
 #include <vector>
 
@@ -17,11 +16,9 @@ void Renderer::FirstRender(const std::vector<game::Tile>& tiles) {
     return;
   }
 
-  background_tiles_.clear();
-
-  for (auto tile : tiles) {
-    const auto tile_position = tile.GetPosition();
-    const auto texture_coords = tile.GetTextureCoords();
+  for (const auto& tile : tiles) {
+    const auto tile_position = tile.position;
+    const auto texture_coords = tile.texture_coords;
 
     const float x = static_cast<float>(tile_position[0]) * tile_size_;
     const float y = static_cast<float>(tile_position[1]) * tile_size_;
@@ -50,7 +47,7 @@ void Renderer::FirstRender(const std::vector<game::Tile>& tiles) {
 
 void Renderer::Render() {
   sf::RenderStates states;
-  sf::View view({32 * 200.f, 32 * 200.f}, {300.f, 200.f});
+  sf::View view({32 * 100.f, 32 * 100.f}, {300.f, 200.f});
   states.texture = &background_texture_;
 
   while (window_.isOpen()) {
@@ -70,14 +67,11 @@ void Renderer::Render() {
       // to zoom on mouse wheel
       if (const auto* mouseWheelScrolled =
               event->getIf<sf::Event::MouseWheelScrolled>()) {
-        const auto zoom = mouseWheelScrolled->delta / zoom_interval_;
+        const auto zoom = -mouseWheelScrolled->delta / zoom_interval_;
         current_zoom_ += zoom;
-
-        if (current_zoom_ >= min_zoom_ && current_zoom_ <= max_zoom_) {
-          view.zoom(1 + zoom);
-        }
-
         current_zoom_ = std::clamp(current_zoom_, min_zoom_, max_zoom_);
+        const auto size = sf::Vector2f(window_.getSize());
+        view.setSize(size * current_zoom_);
       }
     }
 
