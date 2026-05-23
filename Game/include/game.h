@@ -1,10 +1,9 @@
 //
-// Created by Kalle on 07.05.2026.
+// Created by Arthur on 07.05.2026.
 //
 
 #ifndef CITYBUILDER_GAME_H
 #define CITYBUILDER_GAME_H
-#include <complex.h>
 
 #include <random>
 #include <vector>
@@ -12,15 +11,27 @@
 #include "random_generator.h"
 #include "tile.h"
 
+template <typename T>
+concept HasPosition = requires(T a) {
+  {a.position_data} -> std::same_as<PositionData&>;
+};
+
 namespace citybuilder::game {
 
 class Game {
  public:
   Game(const int world_size_width, const int world_size_height)
-      : world_size_width_(world_size_width), world_size_height_(world_size_height) {}
+      : world_size_width_(world_size_width),
+        world_size_height_(world_size_height) {}
 
-  std::vector<Tile> GenerateRandomTiles() const;
   void StartGame() const;
+  [[nodiscard]] std::vector<Tile> GenerateRandomTiles() const;
+
+  template <HasPosition T>
+  bool CanPlace(T object, const std::vector<Tile>& map, int map_width) const;
+
+  template <HasPosition T>
+  void Place(T object, std::vector<Tile>& map, int map_width) const;
 
  private:
   int world_size_width_;

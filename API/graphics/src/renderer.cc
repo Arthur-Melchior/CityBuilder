@@ -17,16 +17,16 @@ void Renderer::FirstRender(const std::vector<game::Tile>& tiles) {
   }
 
   for (const auto& tile : tiles) {
-    const auto tile_position = tile.position;
-    const auto texture_coords = tile.texture_coords;
+    const auto tile_position = tile.position_data.position;
+    const auto texture_coords = tile.position_data.texture_coords;
 
     const float x = static_cast<float>(tile_position[0]) * tile_size_;
     const float y = static_cast<float>(tile_position[1]) * tile_size_;
 
     const auto tex_x_1 = static_cast<float>(texture_coords[0]) * texture_size_;
-    const auto tex_x_2 = (texture_coords[0] + 1) * texture_size_;
+    const auto tex_x_2 = static_cast<float>(texture_coords[0] + 1) * texture_size_;
     const auto tex_y_1 = static_cast<float>(texture_coords[1]) * texture_size_;
-    const auto tex_y_2 = (texture_coords[1] + 1) * texture_size_;
+    const auto tex_y_2 = static_cast<float>(texture_coords[1] + 1) * texture_size_;
 
     background_tiles_.push_back(
         sf::Vertex{{x, y}, sf::Color::White, {tex_x_1, tex_y_1}});

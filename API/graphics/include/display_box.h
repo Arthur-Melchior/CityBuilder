@@ -1,5 +1,5 @@
 //
-// Created by Kalle on 18.05.2026.
+// Created by Arthur on 18.05.2026.
 //
 
 #ifndef CITYBUILDER_DISPLAY_BOX_H

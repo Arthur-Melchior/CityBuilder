@@ -1,5 +1,5 @@
 //
-// Created by Kalle on 07.05.2026.
+// Created by Arthur on 07.05.2026.
 //
 
 #ifndef CITYBUILDER_RENDERER_H
@@ -28,6 +28,7 @@ class Renderer {
   float tile_size_ = 32;
   float texture_size_ = 512;
   std::vector<sf::Vertex> background_tiles_;
+  std::vector<sf::Vertex> foreground_tiles_;
 
   //mouse stuff
   sf::Vector2<int> previous_mouse_position_ = {0,0};

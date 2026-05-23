@@ -1,28 +1,32 @@
 //
-// Created by Kalle on 18.05.2026.
+// Created by Arthur on 18.05.2026.
 //
 
 #ifndef CITYBUILDER_BUILDING_H
 #define CITYBUILDER_BUILDING_H
 #include <array>
+#include <vector>
+
+#include "position_data.h"
+#include "tile.h"
 
 namespace citybuilder::game {
 
 class Building {
-public:
-  std::array<int,2> position;
+ public:
+  PositionData position_data;
   int size_x;
   int size_y;
 };
 
-//cost
-//position
-//output
-//workers
-//min workers
-//max workers
-//output modifier
+// cost
+// position
+// output
+// workers
+// min workers
+// max workers
+// output modifier
 
-} // namespace citybuilder::game
+}  // namespace citybuilder::game
 
 #endif  // CITYBUILDER_BUILDING_H
