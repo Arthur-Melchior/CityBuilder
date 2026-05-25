@@ -5,9 +5,16 @@
 #ifndef CITYBUILDER_DISPLAY_BOX_H
 #define CITYBUILDER_DISPLAY_BOX_H
 
+#include "position_data.h"
+
 namespace citybuilder::graphics {
 
-class DisplayBox;
+class DisplayBox {
+public:
+  PositionData position_data;
+  std::string text = "";
+  unsigned int font_size = 30;
+};
 
 //position
 //click event

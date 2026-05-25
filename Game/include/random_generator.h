@@ -10,23 +10,23 @@ class RandomGenerator {
  public:
   RandomGenerator() : gen(std::random_device{}()) {}
 
-  int random(const int min, const int max) {
+  int Random(const int min, const int max) const {
     std::uniform_int_distribution distrib(min, max);
     return distrib(gen);
   }
 
-  float random(const float min, const float max) {
+  float Random(const float min, const float max) const {
     std::uniform_real_distribution distrib(min, max);
     return distrib(gen);
   }
 
-  double random(const double min, const double max) {
+  double Random(const double min, const double max) const {
     std::uniform_real_distribution distrib(min, max);
     return distrib(gen);
   }
 
  private:
-  std::mt19937 gen;
+  mutable std::mt19937 gen;
 };
 
 #endif  // CITYBUILDER_RANDOM_GENERATOR_H

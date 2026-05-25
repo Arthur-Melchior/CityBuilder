@@ -11,35 +11,23 @@
 
 namespace citybuilder::graphics {
 
-void Renderer::FirstRender(const std::vector<game::Tile>& tiles) {
-  if (!background_texture_.loadFromFile("_assets/tile_sheets/background.png")) {
+void Renderer::FirstRender(const std::vector<game::Tile>& background,
+                           const std::vector<game::Building>& buildings,
+                           const std::vector<DisplayBox>& ui_elements) {
+  if (!tile_sheet_.loadFromFile(
+          "_assets/tile_sheets/complete_tile_sheet.png")) {
     return;
   }
 
-  for (const auto& tile : tiles) {
-    const auto tile_position = tile.position_data.position;
-    const auto texture_coords = tile.position_data.texture_coords;
+  if (!font_.openFromFile("_assets/arial.ttf")) {
+    return;
+  }
 
-    const float x = static_cast<float>(tile_position[0]) * tile_size_;
-    const float y = static_cast<float>(tile_position[1]) * tile_size_;
-
-    const auto tex_x_1 = static_cast<float>(texture_coords[0]) * texture_size_;
-    const auto tex_x_2 = static_cast<float>(texture_coords[0] + 1) * texture_size_;
-    const auto tex_y_1 = static_cast<float>(texture_coords[1]) * texture_size_;
-    const auto tex_y_2 = static_cast<float>(texture_coords[1] + 1) * texture_size_;
-
-    background_tiles_.push_back(
-        sf::Vertex{{x, y}, sf::Color::White, {tex_x_1, tex_y_1}});
-    background_tiles_.push_back(
-        sf::Vertex{{x + tile_size_, y}, sf::Color::White, {tex_x_2, tex_y_1}});
-    background_tiles_.push_back(sf::Vertex{
-        {x + tile_size_, y + tile_size_}, sf::Color::White, {tex_x_2, tex_y_2}});
-    background_tiles_.push_back(
-        sf::Vertex{{x, y}, sf::Color::White, {tex_x_1, tex_y_1}});
-    background_tiles_.push_back(
-        sf::Vertex{{x, y + tile_size_}, sf::Color::White, {tex_x_1, tex_y_2}});
-    background_tiles_.push_back(sf::Vertex{
-        {x + tile_size_, y + tile_size_}, sf::Color::White, {tex_x_2, tex_y_2}});
+  background_tiles_ = GenerateVertices(background);
+  foreground_tiles_ = GenerateVertices(buildings);
+  ui_elements_ = GenerateVertices(ui_elements);
+  for (auto& ui_element : ui_elements) {
+    texts_.emplace_back(sf::Text{font_, ui_element.text, ui_element.font_size});
   }
 
   Render();
@@ -47,8 +35,9 @@ void Renderer::FirstRender(const std::vector<game::Tile>& tiles) {
 
 void Renderer::Render() {
   sf::RenderStates states;
-  sf::View view({32 * 100.f, 32 * 100.f}, {300.f, 200.f});
-  states.texture = &background_texture_;
+  states.texture = &tile_sheet_;
+
+  sf::View view({tile_size_ * 100.f, tile_size_ * 100.f}, {300.f, 200.f});
 
   while (window_.isOpen()) {
     while (const std::optional event = window_.pollEvent()) {
@@ -90,8 +79,82 @@ void Renderer::Render() {
     window_.clear(sf::Color::Black);
     window_.draw(background_tiles_.data(), background_tiles_.size(),
                  sf::PrimitiveType::Triangles, states);
+    window_.draw(foreground_tiles_.data(), foreground_tiles_.size(),
+                 sf::PrimitiveType::Triangles, states);
+    window_.draw(ui_elements_.data(), ui_elements_.size(),
+                 sf::PrimitiveType::Triangles, states);
     window_.display();
   }
+}
+
+template <HasPosition T>
+std::vector<sf::Vertex> Renderer::GenerateVertices(std::vector<T> data) {
+  std::vector<sf::Vertex> vertex_vector;
+
+  if constexpr (std::same_as<T, DisplayBox>) {
+    for (auto& display_box : data) {
+      for (auto letter : display_box.text) {
+        const sf::Glyph& glyph = font_.getGlyph(letter, font_size_, false);
+        auto x = display_box.position_data.position[0];
+        auto y = display_box.position_data.position[1];
+
+        float left = x + glyph.bounds.position.x;
+        float top = y + glyph.bounds.position.y;
+        float right = left + glyph.bounds.size.x;
+        float bottom = top + glyph.bounds.size.y;
+
+        float tex_left = glyph.textureRect.position.x;
+        float tex_top = glyph.textureRect.position.y;
+        float tex_right = tex_left + glyph.textureRect.size.x;
+        float tex_bottom = tex_top + glyph.textureRect.size.y;
+
+        vertex_vector.push_back(
+            sf::Vertex({left, top}, sf::Color::White, {tex_left, tex_top}));
+        vertex_vector.push_back(
+            sf::Vertex({right, top}, sf::Color::White, {tex_right, tex_top}));
+        vertex_vector.push_back(
+            sf::Vertex({right, bottom}, sf::Color::White, {tex_right, tex_bottom}));
+        vertex_vector.push_back(
+            sf::Vertex({left, top}, sf::Color::White, {tex_left, tex_top}));
+        vertex_vector.push_back(
+            sf::Vertex({right, bottom}, sf::Color::White, {tex_right, tex_bottom}));
+        vertex_vector.push_back(
+            sf::Vertex({left, bottom}, sf::Color::White, {tex_left, tex_bottom}));
+      }
+    }
+  } else {
+    for (const auto& tile : data) {
+      const auto tile_position = tile.position_data.position;
+      const auto texture_coords = tile.position_data.texture_coords;
+
+      const float left = static_cast<float>(tile_position[0]) * tile_size_;
+      const float top = static_cast<float>(tile_position[1]) * tile_size_;
+      const float right = left + tile_size_;
+      const float bottom = top + tile_size_;
+
+      const auto tex_left =
+          static_cast<float>(texture_coords[0]) * texture_size_;
+      const auto tex_right = tex_left + texture_size_;
+      const auto tex_top =
+          static_cast<float>(texture_coords[1]) * texture_size_;
+      const auto tex_bottom = tex_top + texture_size_;
+
+      vertex_vector.push_back(
+          sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
+      vertex_vector.push_back(
+          sf::Vertex{{right, top}, sf::Color::White, {tex_right, tex_top}});
+      vertex_vector.push_back(sf::Vertex{
+          {right, bottom}, sf::Color::White, {tex_right, tex_bottom}});
+      vertex_vector.push_back(
+          sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
+      vertex_vector.push_back(
+          sf::Vertex{{left, bottom}, sf::Color::White, {tex_left, tex_bottom}});
+      vertex_vector.push_back(sf::Vertex{
+          {right, bottom}, sf::Color::White, {tex_right, tex_bottom}});
+    }
+  }
+
+  return vertex_vector;
 }
 
 }  // namespace citybuilder::graphics

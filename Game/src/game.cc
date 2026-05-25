@@ -1,5 +1,5 @@
 //
-// Created by Kalle on 07.05.2026.
+// Created by Arthur on 07.05.2026.
 //
 
 #include <game.h>
@@ -18,7 +18,7 @@ citybuilder::game::Game::GenerateRandomTiles() const {
   std::vector<Tile> tiles;
   fast_noise_lite noise;
 
-  noise.SetSeed(1339);
+  noise.SetSeed(random_generator_.Random(0, 10000));
   noise.SetNoiseType(fast_noise_lite::NoiseType_Perlin);
   noise.SetFrequency(0.01f);
 
@@ -34,12 +34,12 @@ citybuilder::game::Game::GenerateRandomTiles() const {
           noise.GetNoise(static_cast<float>(i), static_cast<float>(j));
 
       const std::array position = {i, j};
-      constexpr std::array texture_coords = {0, 0};
+      constexpr std::array texture_coords = {3, 2};
 
       Tile tile(position, texture_coords);
 
       if (noiseValue < -0.5f) {
-        tile.position_data.texture_coords = {1, 1};
+        tile.position_data.texture_coords = {7, 4};
         tile.is_walkable = false;
       }
 
@@ -53,9 +53,8 @@ citybuilder::game::Game::GenerateRandomTiles() const {
 void citybuilder::game::Game::StartGame() const {
   std::vector<Tile> tiles = GenerateRandomTiles();
 
-  RandomGenerator rng{};
   Building b{
-      {{0, 0}, {0, 0}},
+      {{0, 0}, {5, 10}},
   };
   b.size_x = 5;
   b.size_y = 2;
@@ -63,15 +62,16 @@ void citybuilder::game::Game::StartGame() const {
   const int width = static_cast<int>(tiles.size()) / world_size_width_ - 1;
   const int height = static_cast<int>(tiles.size()) / world_size_height_ - 1;
 
-  b.position_data.position = {rng.random(0, width), rng.random(0, height)};
+  b.position_data.position = {random_generator_.Random(0, width), random_generator_.Random(0, height)};
   while (!CanPlace(b, tiles, world_size_width_)) {
-    b.position_data.position = {rng.random(0, width), rng.random(0, height)};
+    b.position_data.position = {random_generator_.Random(0, width), random_generator_.Random(0, height)};
   }
 
   Place(b, tiles, world_size_width_);
+  const std::vector buildings{b};
 
   graphics::Renderer renderer(800, 600, "City Builder");
-  renderer.FirstRender(tiles);
+  renderer.FirstRender(tiles, buildings, std::vector<graphics::DisplayBox>{});
 }
 
 template <HasPosition T>

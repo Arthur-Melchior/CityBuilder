@@ -6,13 +6,15 @@
 #define CITYBUILDER_VILLAGER_H
 #include <array>
 
+#include "position_data.h"
+
 namespace citybuilder::game {
 
 class Villager {
 public:
+  PositionData position_data;
   float happiness;
-  std::array<int,2> position;
-};
+ };
 
 //happiness
 //position

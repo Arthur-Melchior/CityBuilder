@@ -11,11 +11,6 @@
 #include "random_generator.h"
 #include "tile.h"
 
-template <typename T>
-concept HasPosition = requires(T a) {
-  {a.position_data} -> std::same_as<PositionData&>;
-};
-
 namespace citybuilder::game {
 
 class Game {
@@ -36,7 +31,7 @@ class Game {
  private:
   int world_size_width_;
   int world_size_height_;
-  RandomGenerator random_generator_ = RandomGenerator();
+  RandomGenerator random_generator_{};
 };
 
 // load title screen
