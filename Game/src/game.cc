@@ -68,10 +68,16 @@ void citybuilder::game::Game::StartGame() const {
   }
 
   Place(b, tiles, world_size_width_);
-  const std::vector buildings{b};
+  std::vector buildings{b};
+
+  graphics::DisplayBox test;
+  test.position_data = {{0,0}, {0,0}};
+  test.text = "test";
+
+  std::vector ui{test};
 
   graphics::Renderer renderer(800, 600, "City Builder");
-  renderer.FirstRender(tiles, buildings, std::vector<graphics::DisplayBox>{});
+  renderer.FirstRender(tiles, buildings, ui);
 }
 
 template <HasPosition T>

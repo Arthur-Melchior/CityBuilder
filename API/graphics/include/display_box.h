@@ -5,6 +5,7 @@
 #ifndef CITYBUILDER_DISPLAY_BOX_H
 #define CITYBUILDER_DISPLAY_BOX_H
 
+#include <string>
 #include "position_data.h"
 
 namespace citybuilder::graphics {
@@ -12,7 +13,7 @@ namespace citybuilder::graphics {
 class DisplayBox {
 public:
   PositionData position_data;
-  std::string text = "";
+  std::string text;
   unsigned int font_size = 30;
 };
 

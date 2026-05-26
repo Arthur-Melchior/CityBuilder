@@ -18,36 +18,35 @@ namespace citybuilder::graphics {
 class Renderer {
  public:
   Renderer(unsigned int width, unsigned int height, const std::string& name)
-      : window_(sf::VideoMode ({width, height}), name) {}
+      : window_(sf::VideoMode({width, height}), name) {}
 
-  void FirstRender(const std::vector<game::Tile>& background,
-                   const std::vector<game::Building>& buildings,
-                   const std::vector<DisplayBox>& ui_elements);
+  void FirstRender(std::vector<game::Tile> &background,
+                   std::vector<game::Building> &buildings,
+                   std::vector<DisplayBox> &ui_elements);
   void Render();
 
-  template<HasPosition T>
-  std::vector<sf::Vertex> GenerateVertices(std::vector<T>);
+  template <HasPosition T>
+  std::vector<sf::Vertex> GenerateVertices(std::vector<T>&);
 
  private:
-  //references
+  // references
   sf::RenderWindow window_;
   sf::Texture tile_sheet_;
   sf::Font font_;
 
-  //tile stuff
-  float tile_size_ = 32;
-  float texture_size_ = 512;
-  float font_size_;
+  // tile stuff
+  sf::Vector2f tile_size_ = {32, 32};
+  sf::Vector2f texture_size_ = {512, 512};
   std::vector<sf::Vertex> background_tiles_;
   std::vector<sf::Vertex> foreground_tiles_;
   std::vector<sf::Vertex> ui_elements_;
-  std::vector<sf::Text> texts_;
+  std::vector<sf::Vertex> texts_;
 
-  //mouse stuff
-  sf::Vector2<int> previous_mouse_position_ = {0,0};
-  sf::Vector2<int> current_mouse_position_ = {0,0};
+  // mouse stuff
+  sf::Vector2<int> previous_mouse_position_ = {0, 0};
+  sf::Vector2<int> current_mouse_position_ = {0, 0};
 
-  //zoom stuff
+  // zoom stuff
   float current_zoom_ = 1;
   float zoom_interval_ = 10;
   float min_zoom_ = 0.3f;

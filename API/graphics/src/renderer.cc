@@ -11,9 +11,9 @@
 
 namespace citybuilder::graphics {
 
-void Renderer::FirstRender(const std::vector<game::Tile>& background,
-                           const std::vector<game::Building>& buildings,
-                           const std::vector<DisplayBox>& ui_elements) {
+void Renderer::FirstRender(std::vector<game::Tile>& background,
+                           std::vector<game::Building>& buildings,
+                           std::vector<DisplayBox>& ui_elements) {
   if (!tile_sheet_.loadFromFile(
           "_assets/tile_sheets/complete_tile_sheet.png")) {
     return;
@@ -26,9 +26,6 @@ void Renderer::FirstRender(const std::vector<game::Tile>& background,
   background_tiles_ = GenerateVertices(background);
   foreground_tiles_ = GenerateVertices(buildings);
   ui_elements_ = GenerateVertices(ui_elements);
-  for (auto& ui_element : ui_elements) {
-    texts_.emplace_back(sf::Text{font_, ui_element.text, ui_element.font_size});
-  }
 
   Render();
 }
@@ -36,8 +33,10 @@ void Renderer::FirstRender(const std::vector<game::Tile>& background,
 void Renderer::Render() {
   sf::RenderStates states;
   states.texture = &tile_sheet_;
+  sf::RenderStates text_states;
+  text_states.texture = &font_.getTexture(30);
 
-  sf::View view({tile_size_ * 100.f, tile_size_ * 100.f}, {300.f, 200.f});
+  sf::View view({tile_size_.x * 100.f, tile_size_.y * 100.f}, {300.f, 200.f});
 
   while (window_.isOpen()) {
     while (const std::optional event = window_.pollEvent()) {
@@ -82,44 +81,50 @@ void Renderer::Render() {
     window_.draw(foreground_tiles_.data(), foreground_tiles_.size(),
                  sf::PrimitiveType::Triangles, states);
     window_.draw(ui_elements_.data(), ui_elements_.size(),
-                 sf::PrimitiveType::Triangles, states);
+                 sf::PrimitiveType::Triangles, text_states);
+    window_.draw(texts_.data(), texts_.size(), sf::PrimitiveType::Triangles,
+                 text_states);
     window_.display();
   }
 }
 
 template <HasPosition T>
-std::vector<sf::Vertex> Renderer::GenerateVertices(std::vector<T> data) {
+std::vector<sf::Vertex> Renderer::GenerateVertices(std::vector<T>& data) {
   std::vector<sf::Vertex> vertex_vector;
 
   if constexpr (std::same_as<T, DisplayBox>) {
-    for (auto& display_box : data) {
-      for (auto letter : display_box.text) {
-        const sf::Glyph& glyph = font_.getGlyph(letter, font_size_, false);
-        auto x = display_box.position_data.position[0];
-        auto y = display_box.position_data.position[1];
+    for (DisplayBox& display_box : data) {
+      auto x = static_cast<float>(display_box.position_data.position[0]);
+      const auto y = static_cast<float>(display_box.position_data.position[1]);
 
-        float left = x + glyph.bounds.position.x;
-        float top = y + glyph.bounds.position.y;
+      for (const auto letter : display_box.text) {
+        const sf::Glyph& glyph =
+            font_.getGlyph(letter, display_box.font_size, false);
+
+        const float left = x + glyph.bounds.position.x;
+        const float top = y + glyph.bounds.position.y;
         float right = left + glyph.bounds.size.x;
         float bottom = top + glyph.bounds.size.y;
 
-        float tex_left = glyph.textureRect.position.x;
-        float tex_top = glyph.textureRect.position.y;
-        float tex_right = tex_left + glyph.textureRect.size.x;
-        float tex_bottom = tex_top + glyph.textureRect.size.y;
+        auto tex_left = static_cast<float>(glyph.textureRect.position.x);
+        auto tex_top = static_cast<float>(glyph.textureRect.position.y);
+        float tex_right = tex_left + static_cast<float>(glyph.textureRect.size.x);
+        float tex_bottom = tex_top + static_cast<float>(glyph.textureRect.size.y);
 
         vertex_vector.push_back(
             sf::Vertex({left, top}, sf::Color::White, {tex_left, tex_top}));
         vertex_vector.push_back(
             sf::Vertex({right, top}, sf::Color::White, {tex_right, tex_top}));
-        vertex_vector.push_back(
-            sf::Vertex({right, bottom}, sf::Color::White, {tex_right, tex_bottom}));
+        vertex_vector.push_back(sf::Vertex({right, bottom}, sf::Color::White,
+                                           {tex_right, tex_bottom}));
         vertex_vector.push_back(
             sf::Vertex({left, top}, sf::Color::White, {tex_left, tex_top}));
-        vertex_vector.push_back(
-            sf::Vertex({right, bottom}, sf::Color::White, {tex_right, tex_bottom}));
-        vertex_vector.push_back(
-            sf::Vertex({left, bottom}, sf::Color::White, {tex_left, tex_bottom}));
+        vertex_vector.push_back(sf::Vertex({right, bottom}, sf::Color::White,
+                                           {tex_right, tex_bottom}));
+        vertex_vector.push_back(sf::Vertex({left, bottom}, sf::Color::White,
+                                           {tex_left, tex_bottom}));
+
+        x += glyph.advance;
       }
     }
   } else {
@@ -127,17 +132,17 @@ std::vector<sf::Vertex> Renderer::GenerateVertices(std::vector<T> data) {
       const auto tile_position = tile.position_data.position;
       const auto texture_coords = tile.position_data.texture_coords;
 
-      const float left = static_cast<float>(tile_position[0]) * tile_size_;
-      const float top = static_cast<float>(tile_position[1]) * tile_size_;
-      const float right = left + tile_size_;
-      const float bottom = top + tile_size_;
+      const float left = static_cast<float>(tile_position[0]) * tile_size_.x;
+      const float top = static_cast<float>(tile_position[1]) * tile_size_.y;
+      const float right = left + tile_size_.x;
+      const float bottom = top + tile_size_.y;
 
       const auto tex_left =
-          static_cast<float>(texture_coords[0]) * texture_size_;
-      const auto tex_right = tex_left + texture_size_;
+          static_cast<float>(texture_coords[0]) * texture_size_.x;
+      const auto tex_right = tex_left + texture_size_.x;
       const auto tex_top =
-          static_cast<float>(texture_coords[1]) * texture_size_;
-      const auto tex_bottom = tex_top + texture_size_;
+          static_cast<float>(texture_coords[1]) * texture_size_.y;
+      const auto tex_bottom = tex_top + texture_size_.y;
 
       vertex_vector.push_back(
           sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
