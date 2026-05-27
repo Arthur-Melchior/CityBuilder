@@ -40,13 +40,14 @@ class Renderer {
   std::vector<sf::Vertex> background_tiles_;
   std::vector<sf::Vertex> foreground_tiles_;
   std::vector<sf::Vertex> ui_elements_;
-  std::vector<sf::Vertex> texts_;
+  std::vector<sf::Text> texts_;
 
   // mouse stuff
   sf::Vector2<int> previous_mouse_position_ = {0, 0};
   sf::Vector2<int> current_mouse_position_ = {0, 0};
 
   // zoom stuff
+  sf::Vector2f view_port_size_{300,200};
   float current_zoom_ = 1;
   float zoom_interval_ = 10;
   float min_zoom_ = 0.3f;

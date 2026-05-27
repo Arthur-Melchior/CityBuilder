@@ -4,7 +4,6 @@ find_package(nlohmann_json REQUIRED)
 set(SOURCES
         graphics/src/renderer.cc
         graphics/include/renderer.h
-        graphics/include/display_box.h
         graphics/include/fast_noise_lite.h
 )
 

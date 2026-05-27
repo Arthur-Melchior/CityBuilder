@@ -33,8 +33,8 @@ citybuilder::game::Game::GenerateRandomTiles() const {
       const auto noiseValue =
           noise.GetNoise(static_cast<float>(i), static_cast<float>(j));
 
-      const std::array position = {i, j};
-      constexpr std::array texture_coords = {3, 2};
+      const Vector2f position = {static_cast<float>(i), static_cast<float>(j)};
+      const Vector2f texture_coords = {3, 2};
 
       Tile tile(position, texture_coords);
 
@@ -62,16 +62,19 @@ void citybuilder::game::Game::StartGame() const {
   const int width = static_cast<int>(tiles.size()) / world_size_width_ - 1;
   const int height = static_cast<int>(tiles.size()) / world_size_height_ - 1;
 
-  b.position_data.position = {random_generator_.Random(0, width), random_generator_.Random(0, height)};
+  b.position_data.position = {
+      static_cast<float>(random_generator_.Random(0, width)),
+      static_cast<float>(random_generator_.Random(0, height))};
   while (!CanPlace(b, tiles, world_size_width_)) {
-    b.position_data.position = {random_generator_.Random(0, width), random_generator_.Random(0, height)};
+    b.position_data.position = {
+        static_cast<float>(random_generator_.Random(0, width)),
+        static_cast<float>(random_generator_.Random(0, height))};
   }
 
   Place(b, tiles, world_size_width_);
   std::vector buildings{b};
 
-  graphics::DisplayBox test;
-  test.position_data = {{0,0}, {0,0}};
+  DisplayBox test{{{0, 0}, {0, 0}}, {20, 20}};
   test.text = "test";
 
   std::vector ui{test};
@@ -83,8 +86,8 @@ void citybuilder::game::Game::StartGame() const {
 template <HasPosition T>
 bool citybuilder::game::Game::CanPlace(T object, const std::vector<Tile>& map,
                                        int map_width) const {
-  const auto tile_index = object.position_data.position[1] - 1 +
-                          (object.position_data.position[0] - 1) * map_width;
+  const auto tile_index = object.position_data.position.x - 1 +
+                          (object.position_data.position.y - 1) * map_width;
 
   for (int x = 0; x < object.size_x; ++x) {
     if (tile_index + x > map.size() - 1) {
@@ -106,8 +109,8 @@ bool citybuilder::game::Game::CanPlace(T object, const std::vector<Tile>& map,
 template <HasPosition T>
 void citybuilder::game::Game::Place(T object, std::vector<Tile>& map,
                                     int map_width) const {
-  const auto tile_index = object.position_data.position[1] - 1 +
-                          (object.position_data.position[0] - 1) * map_width;
+  const auto tile_index = object.position_data.position.x - 1 +
+                          (object.position_data.position.y - 1) * map_width;
 
   for (int x = 0; x < object.size_x; ++x) {
     const auto x_index = x * map_width;

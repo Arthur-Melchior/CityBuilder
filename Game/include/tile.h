@@ -5,15 +5,12 @@
 #ifndef CITYBUILDER_TILE_H
 #define CITYBUILDER_TILE_H
 
-#include <array>
-
 #include "position_data.h"
 
 namespace citybuilder::game {
 
 struct Tile {
-  Tile(const std::array<int, 2> position,
-       const std::array<int, 2> texture_coords)
+  Tile(const Vector2f position, const Vector2f texture_coords)
       : position_data(position, texture_coords) {
   }
 

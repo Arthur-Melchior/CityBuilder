@@ -8,6 +8,8 @@ set(SOURCES
         include/building.h
         include/random_generator.h
         include/position_data.h
+        include/Vector2f.h
+        include/display_box.h
 )
 
 add_library(Game STATIC ${SOURCES})

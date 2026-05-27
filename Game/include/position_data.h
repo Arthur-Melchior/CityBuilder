@@ -4,16 +4,17 @@
 
 #ifndef CITYBUILDER_POSITION_DATA_H
 #define CITYBUILDER_POSITION_DATA_H
-#include <array>
+
+#include "vector2f.h"
 
 struct PositionData {
-  PositionData(const std::array<int, 2> position,
-               const std::array<int, 2> texture_coords)
+  PositionData(const Vector2f position,
+               const Vector2f texture_coords)
       : position(position), texture_coords(texture_coords) {}
-  PositionData() = default;
+  PositionData() = delete;
 
-  std::array<int, 2> position;
-  std::array<int, 2> texture_coords;
+  Vector2f position;
+  Vector2f texture_coords;
 };
 
 template <typename T>
