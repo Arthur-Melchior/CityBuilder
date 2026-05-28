@@ -7,6 +7,8 @@
 
 #include "vector2f.h"
 
+#include <concepts>
+
 struct PositionData {
   PositionData(const Vector2f position,
                const Vector2f texture_coords)
@@ -19,7 +21,7 @@ struct PositionData {
 
 template <typename T>
 concept HasPosition = requires(T a) {
-  { a.position_data } -> std::same_as<PositionData&>;
+  requires std::same_as<decltype(a.position_data), PositionData>;
 };
 
 #endif  // CITYBUILDER_POSITION_DATA_H

@@ -4,11 +4,8 @@
 
 #ifndef CITYBUILDER_BUILDING_H
 #define CITYBUILDER_BUILDING_H
-#include <array>
-#include <vector>
 
 #include "position_data.h"
-#include "tile.h"
 
 namespace citybuilder::game {
 

@@ -4,8 +4,11 @@
 
 #include "renderer.h"
 
+#include <position_data.h>
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <concepts>
 #include <optional>
 #include <vector>
 
@@ -29,11 +32,10 @@ void Renderer::FirstRender(std::vector<game::Tile>& background,
   for (auto& ui_element : ui_elements) {
     sf::Text text{font_, ui_element.text, ui_element.font_size};
     const auto size = text.getGlobalBounds().size;
-    auto x = ui_element.position_data.position.x + ui_element.size.x / 2 -
-             size.x / 2;
-    auto y = ui_element.position_data.position.y + ui_element.size.y / 2 +
-             size.y / 2;
+    auto x = ui_element.position_data.position.x ;
+    auto y = ui_element.position_data.position.y ;
     text.setPosition({x, y});
+    text.setFillColor(sf::Color::Black);
     texts_.emplace_back(text);
   }
 
@@ -107,32 +109,62 @@ template <HasPosition T>
 std::vector<sf::Vertex> Renderer::GenerateVertices(std::vector<T>& data) {
   std::vector<sf::Vertex> vertex_vector;
 
-  for (const auto& tile : data) {
-    const auto tile_position = tile.position_data.position;
-    const auto texture_coords = tile.position_data.texture_coords;
+  if constexpr (std::same_as<T, DisplayBox>) {
+    for (const DisplayBox& display_box : data) {
+      const auto tile_position = display_box.position_data.position;
+      const auto texture_coords = display_box.position_data.texture_coords;
 
-    const float left = tile_position.x * tile_size_.x;
-    const float top = tile_position.y * tile_size_.y;
-    const float right = left + tile_size_.x;
-    const float bottom = top + tile_size_.y;
+      const float left = tile_position.x * display_box.size.x;
+      const float top = tile_position.y * display_box.size.y;
+      const float right = left + display_box.size.x;
+      const float bottom = top + display_box.size.y;
 
-    const auto tex_left = texture_coords.x * texture_size_.x;
-    const auto tex_right = tex_left + texture_size_.x;
-    const auto tex_top = texture_coords.y * texture_size_.y;
-    const auto tex_bottom = tex_top + texture_size_.y;
+      const auto tex_left = texture_coords.x * texture_size_.x;
+      const auto tex_right = tex_left + texture_size_.x;
+      const auto tex_top = texture_coords.y * texture_size_.y;
+      const auto tex_bottom = tex_top + texture_size_.y;
 
-    vertex_vector.push_back(
-        sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
-    vertex_vector.push_back(
-        sf::Vertex{{right, top}, sf::Color::White, {tex_right, tex_top}});
-    vertex_vector.push_back(
-        sf::Vertex{{right, bottom}, sf::Color::White, {tex_right, tex_bottom}});
-    vertex_vector.push_back(
-        sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
-    vertex_vector.push_back(
-        sf::Vertex{{left, bottom}, sf::Color::White, {tex_left, tex_bottom}});
-    vertex_vector.push_back(
-        sf::Vertex{{right, bottom}, sf::Color::White, {tex_right, tex_bottom}});
+      vertex_vector.push_back(
+          sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
+      vertex_vector.push_back(
+          sf::Vertex{{right, top}, sf::Color::White, {tex_right, tex_top}});
+      vertex_vector.push_back(sf::Vertex{
+          {right, bottom}, sf::Color::White, {tex_right, tex_bottom}});
+      vertex_vector.push_back(
+          sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
+      vertex_vector.push_back(
+          sf::Vertex{{left, bottom}, sf::Color::White, {tex_left, tex_bottom}});
+      vertex_vector.push_back(sf::Vertex{
+          {right, bottom}, sf::Color::White, {tex_right, tex_bottom}});
+    }
+  } else {
+    for (const auto& tile : data) {
+      const auto tile_position = tile.position_data.position;
+      const auto texture_coords = tile.position_data.texture_coords;
+
+      const float left = tile_position.x * tile_size_.x;
+      const float top = tile_position.y * tile_size_.y;
+      const float right = left + tile_size_.x;
+      const float bottom = top + tile_size_.y;
+
+      const auto tex_left = texture_coords.x * texture_size_.x;
+      const auto tex_right = tex_left + texture_size_.x;
+      const auto tex_top = texture_coords.y * texture_size_.y;
+      const auto tex_bottom = tex_top + texture_size_.y;
+
+      vertex_vector.push_back(
+          sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
+      vertex_vector.push_back(
+          sf::Vertex{{right, top}, sf::Color::White, {tex_right, tex_top}});
+      vertex_vector.push_back(sf::Vertex{
+          {right, bottom}, sf::Color::White, {tex_right, tex_bottom}});
+      vertex_vector.push_back(
+          sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
+      vertex_vector.push_back(
+          sf::Vertex{{left, bottom}, sf::Color::White, {tex_left, tex_bottom}});
+      vertex_vector.push_back(sf::Vertex{
+          {right, bottom}, sf::Color::White, {tex_right, tex_bottom}});
+    }
   }
 
   return vertex_vector;

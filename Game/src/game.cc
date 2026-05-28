@@ -74,8 +74,9 @@ void citybuilder::game::Game::StartGame() const {
   Place(b, tiles, world_size_width_);
   std::vector buildings{b};
 
-  DisplayBox test{{{0, 0}, {0, 0}}, {20, 20}};
+  DisplayBox test{{{0, 0}, {8, 10}}, {40, 20}};
   test.text = "test";
+  test.font_size = 8;
 
   std::vector ui{test};
 
