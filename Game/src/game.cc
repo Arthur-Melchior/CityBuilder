@@ -9,9 +9,11 @@
 #include <ranges>
 
 #include "building.h"
+#include "context.h"
 #include "fast_noise_lite.h"
 #include "position_data.h"
 #include "renderer.h"
+#include "save_manager.h"
 
 std::vector<citybuilder::game::Tile>
 citybuilder::game::Game::GenerateRandomTiles() const {
@@ -74,11 +76,16 @@ void citybuilder::game::Game::StartGame() const {
   Place(b, tiles, world_size_width_);
   std::vector buildings{b};
 
-  DisplayBox test{{{0, 0}, {8, 10}}, {40, 20}};
+  DisplayBox test{{{30, 0}, {8, 10}}, {40, 20}};
   test.text = "test";
   test.font_size = 8;
 
   std::vector ui{test};
+
+  Context context;
+  context.tiles = tiles;
+  SaveManager::Save(context, "test.json");
+  auto save = SaveManager::Load("test.json");
 
   graphics::Renderer renderer(800, 600, "City Builder");
   renderer.FirstRender(tiles, buildings, ui);

@@ -13,6 +13,10 @@ struct Tile {
   Tile(const Vector2f position, const Vector2f texture_coords)
       : position_data(position, texture_coords) {
   }
+  Tile(const Vector2f position, const Vector2f texture_coords,
+       const bool is_walkable)
+      : position_data(position, texture_coords), is_walkable(is_walkable) {
+  }
 
   PositionData position_data;
 

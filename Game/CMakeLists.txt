@@ -10,6 +10,7 @@ set(SOURCES
         include/position_data.h
         include/Vector2f.h
         include/display_box.h
+        include/context.h
 )
 
 add_library(Game STATIC ${SOURCES})

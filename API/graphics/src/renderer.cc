@@ -12,6 +12,8 @@
 #include <optional>
 #include <vector>
 
+#include "renderer_display_box.h"
+
 namespace citybuilder::graphics {
 
 void Renderer::FirstRender(std::vector<game::Tile>& background,
@@ -28,15 +30,17 @@ void Renderer::FirstRender(std::vector<game::Tile>& background,
 
   background_tiles_ = GenerateVertices(background);
   foreground_tiles_ = GenerateVertices(buildings);
-  ui_elements_ = GenerateVertices(ui_elements);
   for (auto& ui_element : ui_elements) {
+    sf::RectangleShape shape{{ui_element.size.x, ui_element.size.y}};
+    shape.setPosition({ui_element.position_data.position.x,
+                       ui_element.position_data.position.y});
+    shape.setFillColor(sf::Color::White);
+
     sf::Text text{font_, ui_element.text, ui_element.font_size};
-    const auto size = text.getGlobalBounds().size;
-    auto x = ui_element.position_data.position.x ;
-    auto y = ui_element.position_data.position.y ;
-    text.setPosition({x, y});
+    text.setPosition({ui_element.position_data.position.x,
+                      ui_element.position_data.position.y});
     text.setFillColor(sf::Color::Black);
-    texts_.emplace_back(text);
+    display_boxes_.emplace_back(shape, text);
   }
 
   Render();
@@ -45,8 +49,6 @@ void Renderer::FirstRender(std::vector<game::Tile>& background,
 void Renderer::Render() {
   sf::RenderStates states;
   states.texture = &tile_sheet_;
-  sf::RenderStates text_states;
-  text_states.texture = &font_.getTexture(30);
 
   sf::View world_view({0, 0}, view_port_size_);
   sf::View ui_view({0, 0}, view_port_size_);
@@ -74,14 +76,19 @@ void Renderer::Render() {
         const auto size = sf::Vector2f(window_.getSize());
         world_view.setSize(size * current_zoom_);
       }
+
+      for (auto display_box : display_boxes_) {
+        display_box.HandleEvents(event, window_, ui_view);
+      }
     }
 
+    // to move the map on middle mouse drag
     if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle)) {
       auto position = sf::Mouse::getPosition(window_);
       current_mouse_position_ = {position.x, position.y};
       auto diff =
-          sf::Vector2f(previous_mouse_position_ - current_mouse_position_);
-      diff = {diff.x * current_zoom_, diff.y * current_zoom_};
+          sf::Vector2f(previous_mouse_position_ - current_mouse_position_) *
+          current_zoom_;
       world_view.move(diff);
 
       previous_mouse_position_ = current_mouse_position_;
@@ -96,11 +103,12 @@ void Renderer::Render() {
                  sf::PrimitiveType::Triangles, states);
 
     window_.setView(ui_view);
-    window_.draw(ui_elements_.data(), ui_elements_.size(),
-                 sf::PrimitiveType::Triangles, states);
-    for (auto& text : texts_) {
-      window_.draw(text);
+
+    for (auto& display_box : display_boxes_) {
+      window_.draw(display_box.shape);
+      window_.draw(display_box.text);
     }
+
     window_.display();
   }
 }

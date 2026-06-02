@@ -7,6 +7,10 @@
 
 namespace citybuilder::game {
 
+class Resource {
+public:
+  std::string name;
+};
 //how to make it (if it can be made)
 //position
 //base price

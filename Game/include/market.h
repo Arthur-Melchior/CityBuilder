@@ -7,7 +7,10 @@
 
 namespace citybuilder::game {
 
-class Market;
+class Market {
+public:
+  std::string name;
+};
 
 //every resource
 //offre demand

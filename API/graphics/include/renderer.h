@@ -12,6 +12,7 @@
 
 #include "display_box.h"
 #include "game.h"
+#include "renderer_display_box.h"
 
 namespace citybuilder::graphics {
 
@@ -39,8 +40,7 @@ class Renderer {
   sf::Vector2f texture_size_ = {512, 512};
   std::vector<sf::Vertex> background_tiles_;
   std::vector<sf::Vertex> foreground_tiles_;
-  std::vector<sf::Vertex> ui_elements_;
-  std::vector<sf::Text> texts_;
+  std::vector<RendererDisplayBox> display_boxes_;
 
   // mouse stuff
   sf::Vector2<int> previous_mouse_position_ = {0, 0};
