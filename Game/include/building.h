@@ -12,8 +12,7 @@ namespace citybuilder::game {
 class Building {
  public:
   PositionData position_data;
-  int size_x;
-  int size_y;
+  Vector2f size;
 };
 
 // cost

@@ -13,7 +13,7 @@ namespace citybuilder::game {
 class Villager {
 public:
   PositionData position_data;
-  float happiness;
+  float happiness{};
  };
 
 //happiness

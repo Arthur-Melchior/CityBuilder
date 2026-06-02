@@ -55,11 +55,7 @@ citybuilder::game::Game::GenerateRandomTiles() const {
 void citybuilder::game::Game::StartGame() const {
   std::vector<Tile> tiles = GenerateRandomTiles();
 
-  Building b{
-      {{0, 0}, {5, 10}},
-  };
-  b.size_x = 5;
-  b.size_y = 2;
+  Building b{{{0, 0}, {5, 10}}, {5, 2}};
 
   const int width = static_cast<int>(tiles.size()) / world_size_width_ - 1;
   const int height = static_cast<int>(tiles.size()) / world_size_height_ - 1;
