@@ -5,13 +5,14 @@
 #ifndef CITYBUILDER_BUILDING_H
 #define CITYBUILDER_BUILDING_H
 
-#include "position_data.h"
+#include "placeable.h"
 
 namespace citybuilder::game {
 
 class Building {
  public:
-  PositionData position_data;
+  Vector2i position;
+  Vector2i texture_coords;
   Vector2f size;
 };
 

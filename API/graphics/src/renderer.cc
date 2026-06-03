@@ -4,7 +4,7 @@
 
 #include "renderer.h"
 
-#include <position_data.h>
+#include <placeable.h>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -16,9 +16,9 @@
 
 namespace citybuilder::graphics {
 
-void Renderer::FirstRender(std::vector<game::Tile>& background,
-                           std::vector<game::Building>& buildings,
-                           std::vector<DisplayBox>& ui_elements) {
+void Renderer::FirstRender(const std::span<game::Tile> background,
+                           const std::span<game::Building> buildings,
+                           std::span<DisplayBox> ui_elements) {
   if (!tile_sheet_.loadFromFile(
           "_assets/tile_sheets/complete_tile_sheet.png")) {
     return;
@@ -32,13 +32,13 @@ void Renderer::FirstRender(std::vector<game::Tile>& background,
   foreground_tiles_ = GenerateVertices(buildings);
   for (auto& ui_element : ui_elements) {
     sf::RectangleShape shape{{ui_element.size.x, ui_element.size.y}};
-    shape.setPosition({ui_element.position_data.position.x,
-                       ui_element.position_data.position.y});
+    shape.setPosition(
+        sf::Vector2f(ui_element.position.x, ui_element.position.y));
     shape.setFillColor(sf::Color::White);
 
     sf::Text text{font_, ui_element.text, ui_element.font_size};
-    text.setPosition({ui_element.position_data.position.x,
-                      ui_element.position_data.position.y});
+    text.setPosition(
+        sf::Vector2f(ui_element.position.x, ui_element.position.y));
     text.setFillColor(sf::Color::Black);
     display_boxes_.emplace_back(shape, text);
   }
@@ -113,14 +113,14 @@ void Renderer::Render() {
   }
 }
 
-template <HasPosition T>
-std::vector<sf::Vertex> Renderer::GenerateVertices(std::vector<T>& data) {
+template <Placeable T>
+std::vector<sf::Vertex> Renderer::GenerateVertices(std::span<T> data) {
   std::vector<sf::Vertex> vertex_vector;
 
   if constexpr (std::same_as<T, DisplayBox>) {
     for (const DisplayBox& display_box : data) {
-      const auto tile_position = display_box.position_data.position;
-      const auto texture_coords = display_box.position_data.texture_coords;
+      const auto tile_position = display_box.position;
+      const auto texture_coords = display_box.texture_coords;
 
       const float left = tile_position.x * display_box.size.x;
       const float top = tile_position.y * display_box.size.y;
@@ -147,8 +147,8 @@ std::vector<sf::Vertex> Renderer::GenerateVertices(std::vector<T>& data) {
     }
   } else {
     for (const auto& tile : data) {
-      const auto tile_position = tile.position_data.position;
-      const auto texture_coords = tile.position_data.texture_coords;
+      const auto tile_position = tile.position;
+      const auto texture_coords = tile.texture_coords;
 
       const float left = tile_position.x * tile_size_.x;
       const float top = tile_position.y * tile_size_.y;

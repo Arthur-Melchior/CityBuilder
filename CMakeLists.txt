@@ -12,6 +12,6 @@ add_custom_target(copy_assets ALL
         ${CMAKE_BINARY_DIR}/_assets
 )
 
-add_executable(CityBuilder main.cpp)
+add_executable(CityBuilder main.cc)
 target_link_libraries(CityBuilder PRIVATE API Game)
 add_dependencies(CityBuilder copy_assets)

@@ -9,6 +9,7 @@
 #include <tile.h>
 
 #include <SFML/Graphics.hpp>
+#include <span>
 
 #include "display_box.h"
 #include "game.h"
@@ -21,13 +22,13 @@ class Renderer {
   Renderer(unsigned int width, unsigned int height, const std::string& name)
       : window_(sf::VideoMode({width, height}), name) {}
 
-  void FirstRender(std::vector<game::Tile> &background,
-                   std::vector<game::Building> &buildings,
-                   std::vector<DisplayBox> &ui_elements);
+  void FirstRender(std::span<game::Tile> background,
+                   std::span<game::Building> buildings,
+                   std::span<DisplayBox> ui_elements);
   void Render();
 
-  template <HasPosition T>
-  std::vector<sf::Vertex> GenerateVertices(std::vector<T>&);
+  template <Placeable T>
+  std::vector<sf::Vertex> GenerateVertices(std::span<T>);
 
  private:
   // references

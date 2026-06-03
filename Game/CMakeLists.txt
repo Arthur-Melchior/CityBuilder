@@ -7,10 +7,14 @@ set(SOURCES
         include/resource.h
         include/building.h
         include/random_generator.h
-        include/position_data.h
-        include/Vector2f.h
+        include/placeable.h
+        include/vector2.h
         include/display_box.h
         include/context.h
+        include/BehaviourTree/node.h
+        include/BehaviourTree/action_node.h
+        include/BehaviourTree/selector_node.h
+        include/BehaviourTree/sequence_node.h
 )
 
 add_library(Game STATIC ${SOURCES})

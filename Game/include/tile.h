@@ -5,25 +5,27 @@
 #ifndef CITYBUILDER_TILE_H
 #define CITYBUILDER_TILE_H
 
-#include "position_data.h"
+#include "placeable.h"
 
 namespace citybuilder::game {
 
 struct Tile {
-  Tile(const Vector2f position, const Vector2f texture_coords)
-      : position_data(position, texture_coords) {
-  }
-  Tile(const Vector2f position, const Vector2f texture_coords,
+  Tile(const Vector2i position, const Vector2i texture_coords)
+      : position(position), texture_coords(texture_coords) {}
+  Tile(const Vector2i position, const Vector2i texture_coords,
        const bool is_walkable)
-      : position_data(position, texture_coords), is_walkable(is_walkable) {
-  }
+      : position(position),
+        texture_coords(texture_coords),
+        is_walkable(is_walkable) {}
 
-  PositionData position_data;
+  Vector2i position;
+  Vector2i texture_coords;
+  Vector2f size{32, 32};
 
   bool is_walkable = true;
 };
 
-//resource ?
+// resource ?
 
 }  // namespace citybuilder::game
 

@@ -22,11 +22,41 @@ class Game {
   void StartGame() const;
   [[nodiscard]] std::vector<Tile> GenerateRandomTiles() const;
 
-  template <HasPosition T>
-  bool CanPlace(T object, const std::vector<Tile>& map, int map_width) const;
+  template <Placeable T>
+  bool CanPlace(T& object, const std::vector<Tile>& map, int map_width) const {
+    const auto tile_index = object.position.x - 1 +
+                          (object.position.y - 1) * map_width;
 
-  template <HasPosition T>
-  void Place(T object, std::vector<Tile>& map, int map_width) const;
+    for (int x = 0; x < object.size.x; ++x) {
+      if (tile_index + x > map.size() - 1) {
+        return false;
+      }
+
+      const auto x_index = x * map_width;
+
+      for (int y = 0; y < object.size.y; ++y) {
+        if (tile_index - y < 0 || !map[tile_index - y + x_index].is_walkable) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  template <Placeable T>
+  void Place(T& object, std::vector<Tile>& map, int map_width) const {
+    const auto tile_index = object.position.x - 1 +
+                          (object.position.y - 1) * map_width;
+
+    for (int x = 0; x < object.size.x; ++x) {
+      const auto x_index = x * map_width;
+
+      for (int y = 0; y < object.size.y; ++y) {
+        map[tile_index - y + x_index].is_walkable = false;
+      }
+    }
+  };
 
  private:
   int world_size_width_;

@@ -6,12 +6,11 @@
 #include <tile.h>
 
 #include <random>
-#include <ranges>
 
 #include "building.h"
 #include "context.h"
 #include "fast_noise_lite.h"
-#include "position_data.h"
+#include "placeable.h"
 #include "renderer.h"
 #include "save_manager.h"
 
@@ -35,13 +34,13 @@ citybuilder::game::Game::GenerateRandomTiles() const {
       const auto noiseValue =
           noise.GetNoise(static_cast<float>(i), static_cast<float>(j));
 
-      const Vector2f position = {static_cast<float>(i), static_cast<float>(j)};
-      const Vector2f texture_coords = {3, 2};
+      const Vector2i position = {i, j};
+      const Vector2i texture_coords = {3, 2};
 
       Tile tile(position, texture_coords);
 
       if (noiseValue < -0.5f) {
-        tile.position_data.texture_coords = {7, 4};
+        tile.texture_coords = {7, 4};
         tile.is_walkable = false;
       }
 
@@ -55,24 +54,25 @@ citybuilder::game::Game::GenerateRandomTiles() const {
 void citybuilder::game::Game::StartGame() const {
   std::vector<Tile> tiles = GenerateRandomTiles();
 
-  Building b{{{0, 0}, {5, 10}}, {5, 2}};
+  Building b{{0, 0}, {5, 10}, {5, 2}};
 
   const int width = static_cast<int>(tiles.size()) / world_size_width_ - 1;
   const int height = static_cast<int>(tiles.size()) / world_size_height_ - 1;
 
-  b.position_data.position = {
-      static_cast<float>(random_generator_.Random(0, width)),
-      static_cast<float>(random_generator_.Random(0, height))};
+  b.position = {
+      random_generator_.Random(0, width),
+      random_generator_.Random(0, height)};
+
   while (!CanPlace(b, tiles, world_size_width_)) {
-    b.position_data.position = {
-        static_cast<float>(random_generator_.Random(0, width)),
-        static_cast<float>(random_generator_.Random(0, height))};
+    b.position = {
+        random_generator_.Random(0, width),
+        random_generator_.Random(0, height)};
   }
 
   Place(b, tiles, world_size_width_);
   std::vector buildings{b};
 
-  DisplayBox test{{{30, 0}, {8, 10}}, {40, 20}};
+  DisplayBox test{{30, 0}, {8, 10}, {40, 20}};
   test.text = "test";
   test.font_size = 8;
 
@@ -85,42 +85,4 @@ void citybuilder::game::Game::StartGame() const {
 
   graphics::Renderer renderer(800, 600, "City Builder");
   renderer.FirstRender(tiles, buildings, ui);
-}
-
-template <HasPosition T>
-bool citybuilder::game::Game::CanPlace(T object, const std::vector<Tile>& map,
-                                       int map_width) const {
-  const auto tile_index = object.position_data.position.x - 1 +
-                          (object.position_data.position.y - 1) * map_width;
-
-  for (int x = 0; x < object.size_x; ++x) {
-    if (tile_index + x > map.size() - 1) {
-      return false;
-    }
-
-    const auto x_index = x * map_width;
-
-    for (int y = 0; y < object.size_y; ++y) {
-      if (tile_index - y < 0 || !map[tile_index - y + x_index].is_walkable) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
-template <HasPosition T>
-void citybuilder::game::Game::Place(T object, std::vector<Tile>& map,
-                                    int map_width) const {
-  const auto tile_index = object.position_data.position.x - 1 +
-                          (object.position_data.position.y - 1) * map_width;
-
-  for (int x = 0; x < object.size_x; ++x) {
-    const auto x_index = x * map_width;
-
-    for (int y = 0; y < object.size_y; ++y) {
-      map[tile_index - y + x_index].is_walkable = false;
-    }
-  }
 }

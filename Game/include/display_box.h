@@ -4,11 +4,12 @@
 
 #ifndef CITYBUILDER_DISPLAY_BOX_H
 #define CITYBUILDER_DISPLAY_BOX_H
-#include "position_data.h"
+#include "placeable.h"
 
 class DisplayBox {
 public:
-  PositionData position_data;
+  Vector2i position;
+  Vector2i texture_coords;
   Vector2f size;
   std::string text;
   unsigned int font_size = 30;

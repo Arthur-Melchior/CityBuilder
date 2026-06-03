@@ -4,15 +4,16 @@
 
 #ifndef CITYBUILDER_VILLAGER_H
 #define CITYBUILDER_VILLAGER_H
-#include <array>
 
-#include "position_data.h"
+#include "placeable.h"
 
 namespace citybuilder::game {
 
 class Villager {
 public:
-  PositionData position_data;
+  Vector2i position;
+  Vector2i texture_coords;
+  Vector2f size;
   float happiness{};
  };
 

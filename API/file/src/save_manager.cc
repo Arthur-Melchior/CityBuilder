@@ -13,20 +13,19 @@ void SaveManager::Save(Context& context, const std::string& file_path) {
   save["resources"] = nlohmann::json::array();
 
   for (auto& tile : context.tiles) {
-    save["tiles"].push_back({{"x", tile.position_data.position.x},
-                             {"y", tile.position_data.position.y},
-                             {"tex_x", tile.position_data.texture_coords.x},
-                             {"tex_y", tile.position_data.texture_coords.y},
+    save["tiles"].push_back({{"x", tile.position.x},
+                             {"y", tile.position.y},
+                             {"tex_x", tile.texture_coords.x},
+                             {"tex_y", tile.texture_coords.y},
                              {"is_walkable", tile.is_walkable}});
   }
   for (auto& building : context.buildings) {
-    save["buildings"].push_back(
-        {{"x", building.position_data.position.x},
-         {"y", building.position_data.position.y},
-         {"tex_x", building.position_data.texture_coords.x},
-         {"tex_y", building.position_data.texture_coords.y},
-         {"size_x", building.size.x},
-         {"size_y", building.size.y}});
+    save["buildings"].push_back({{"x", building.position.x},
+                                 {"y", building.position.y},
+                                 {"tex_x", building.texture_coords.x},
+                                 {"tex_y", building.texture_coords.y},
+                                 {"size_x", building.size.x},
+                                 {"size_y", building.size.y}});
   }
 
   for (auto& market : context.markets) {
@@ -35,10 +34,10 @@ void SaveManager::Save(Context& context, const std::string& file_path) {
 
   for (auto& villager : context.villagers) {
     save["villagers"].push_back({
-        {"x", villager.position_data.position.x},
-        {"y", villager.position_data.position.y},
-        {"tex_x", villager.position_data.texture_coords.x},
-        {"tex_y", villager.position_data.texture_coords.y},
+        {"x", villager.position.x},
+        {"y", villager.position.y},
+        {"tex_x", villager.texture_coords.x},
+        {"tex_y", villager.texture_coords.y},
         {"happiness", villager.happiness},
     });
   }
@@ -59,10 +58,10 @@ Context SaveManager::Load(const std::string& file_path) {
   Context context;
 
   for (const auto& tile : data["tiles"]) {
-    auto x = tile["x"].get<float>();
-    auto y = tile["y"].get<float>();
-    auto tex_x = tile["tex_x"].get<float>();
-    auto tex_y = tile["tex_y"].get<float>();
+    auto x = tile["x"].get<int>();
+    auto y = tile["y"].get<int>();
+    auto tex_x = tile["tex_x"].get<int>();
+    auto tex_y = tile["tex_y"].get<int>();
     auto is_walkable = tile["is_walkable"].get<bool>();
 
     citybuilder::game::Tile t{{x, y}, {tex_x, tex_y}, is_walkable};
@@ -71,14 +70,14 @@ Context SaveManager::Load(const std::string& file_path) {
   }
 
   for (const auto& building : data["buildings"]) {
-    auto x = building["x"].get<float>();
-    auto y = building["y"].get<float>();
-    auto tex_x = building["tex_x"].get<float>();
-    auto tex_y = building["tex_y"].get<float>();
+    auto x = building["x"].get<int>();
+    auto y = building["y"].get<int>();
+    auto tex_x = building["tex_x"].get<int>();
+    auto tex_y = building["tex_y"].get<int>();
     auto size_x = building["size_x"].get<float>();
     auto size_y = building["size_y"].get<float>();
 
-    citybuilder::game::Building b{{{x, y}, {tex_x, tex_y}}, {size_x, size_y}};
+    citybuilder::game::Building b{{x, y}, {tex_x, tex_y}, {size_x, size_y}};
 
     context.buildings.push_back(b);
   }
@@ -92,13 +91,13 @@ Context SaveManager::Load(const std::string& file_path) {
   }
 
   for (auto& villager : data["villagers"]) {
-    auto x = villager["x"].get<float>();
-    auto y = villager["y"].get<float>();
-    auto tex_x = villager["tex_x"].get<float>();
-    auto tex_y = villager["tex_y"].get<float>();
+    auto x = villager["x"].get<int>();
+    auto y = villager["y"].get<int>();
+    auto tex_x = villager["tex_x"].get<int>();
+    auto tex_y = villager["tex_y"].get<int>();
     auto happiness = villager["happiness"].get<float>();
 
-    citybuilder::game::Villager v{{{x, y}, {tex_x, tex_y}}, happiness};
+    citybuilder::game::Villager v{{x, y}, {tex_x, tex_y},{0,0}, happiness};
 
     context.villagers.push_back(v);
   }
