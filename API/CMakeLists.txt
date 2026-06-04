@@ -9,6 +9,8 @@ set(SOURCES
         graphics/src/renderer_display_box.cc
         file/include/save_manager.h
         file/src/save_manager.cc
+        utils/include/timer.h
+        utils/include/timed_function.h
 )
 
 add_library(API STATIC ${SOURCES})

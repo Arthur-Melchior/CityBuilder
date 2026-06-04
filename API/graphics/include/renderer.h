@@ -25,19 +25,23 @@ class Renderer {
   void FirstRender(std::span<game::Tile> background,
                    std::span<game::Building> buildings,
                    std::span<DisplayBox> ui_elements);
-  void Render();
+  bool Render();
 
   template <Placeable T>
   std::vector<sf::Vertex> GenerateVertices(std::span<T>);
 
  private:
+  sf::RenderStates states_;
+
+  sf::View world_view_;
+  sf::View ui_view_;
+
   // references
   sf::RenderWindow window_;
   sf::Texture tile_sheet_;
   sf::Font font_;
 
   // tile stuff
-  sf::Vector2f tile_size_ = {32, 32};
   sf::Vector2f texture_size_ = {512, 512};
   std::vector<sf::Vertex> background_tiles_;
   std::vector<sf::Vertex> foreground_tiles_;

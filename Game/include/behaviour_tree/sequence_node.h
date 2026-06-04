@@ -23,6 +23,7 @@ struct SequenceNode : Node {
     return status;
   }
   int current_child = 0;
+  std::vector<Node*> children;
 };
 
 #endif  // CITYBUILDER_SEQUENCE_NODE_H

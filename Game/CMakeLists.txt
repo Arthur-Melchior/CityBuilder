@@ -11,10 +11,10 @@ set(SOURCES
         include/vector2.h
         include/display_box.h
         include/context.h
-        include/BehaviourTree/node.h
-        include/BehaviourTree/action_node.h
-        include/BehaviourTree/selector_node.h
-        include/BehaviourTree/sequence_node.h
+        include/behaviour_tree/node.h
+        include/behaviour_tree/action_node.h
+        include/behaviour_tree/selector_node.h
+        include/behaviour_tree/sequence_node.h
 )
 
 add_library(Game STATIC ${SOURCES})

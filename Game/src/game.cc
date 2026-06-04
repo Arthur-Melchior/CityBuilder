@@ -7,12 +7,55 @@
 
 #include <random>
 
+#include "behaviour_tree/action_node.h"
+#include "behaviour_tree/node.h"
+#include "behaviour_tree/selector_node.h"
 #include "building.h"
 #include "context.h"
 #include "fast_noise_lite.h"
 #include "placeable.h"
 #include "renderer.h"
 #include "save_manager.h"
+
+void citybuilder::game::Game::StartGame() const {
+  std::vector<Tile> tiles = GenerateRandomTiles();
+
+  Building b{{0, 0}, {5, 10}, {5, 2}};
+
+  const int width = static_cast<int>(tiles.size()) / world_size_width_ - 1;
+  const int height = static_cast<int>(tiles.size()) / world_size_height_ - 1;
+
+  b.position = {random_generator_.Random(0, width),
+                random_generator_.Random(0, height)};
+
+  while (!CanPlace(b, tiles, world_size_width_)) {
+    b.position = {random_generator_.Random(0, width),
+                  random_generator_.Random(0, height)};
+  }
+
+  Place(b, tiles, world_size_width_);
+  std::vector buildings{b};
+
+  DisplayBox test{{30, 0}, {8, 10}, {40, 20}};
+  test.text = "test";
+  test.font_size = 8;
+
+  std::vector ui{test};
+
+  // SelectorNode node;
+  // ActionNode wander;
+  // wander.action = []() { return kSuccess; };
+  // node.children.emplace_back(&wander);
+
+  Villager villager{{0, 0}, {1, 1}, {32, 32}, std::make_unique<SelectorNode>(), 0};
+  std::vector<Villager> villagers{(std::move(villager))};
+
+  graphics::Renderer renderer(800, 600, "City Builder");
+  renderer.FirstRender(tiles, buildings, ui);
+  while (renderer.Render()) {
+    villager.bt_root->Tick();
+  }
+}
 
 std::vector<citybuilder::game::Tile>
 citybuilder::game::Game::GenerateRandomTiles() const {
@@ -49,40 +92,4 @@ citybuilder::game::Game::GenerateRandomTiles() const {
   }
 
   return tiles;
-}
-
-void citybuilder::game::Game::StartGame() const {
-  std::vector<Tile> tiles = GenerateRandomTiles();
-
-  Building b{{0, 0}, {5, 10}, {5, 2}};
-
-  const int width = static_cast<int>(tiles.size()) / world_size_width_ - 1;
-  const int height = static_cast<int>(tiles.size()) / world_size_height_ - 1;
-
-  b.position = {
-      random_generator_.Random(0, width),
-      random_generator_.Random(0, height)};
-
-  while (!CanPlace(b, tiles, world_size_width_)) {
-    b.position = {
-        random_generator_.Random(0, width),
-        random_generator_.Random(0, height)};
-  }
-
-  Place(b, tiles, world_size_width_);
-  std::vector buildings{b};
-
-  DisplayBox test{{30, 0}, {8, 10}, {40, 20}};
-  test.text = "test";
-  test.font_size = 8;
-
-  std::vector ui{test};
-
-  Context context;
-  context.tiles = tiles;
-  SaveManager::Save(context, "test.json");
-  auto save = SaveManager::Load("test.json");
-
-  graphics::Renderer renderer(800, 600, "City Builder");
-  renderer.FirstRender(tiles, buildings, ui);
 }

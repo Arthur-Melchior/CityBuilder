@@ -25,6 +25,7 @@ struct SelectorNode : Node {
   }
 
   int currentChild = 0;
+  std::vector<Node*> children;
 };
 
 #endif  // CITYBUILDER_SELECTOR_NODE_H

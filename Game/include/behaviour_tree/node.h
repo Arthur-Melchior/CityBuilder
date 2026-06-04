@@ -15,8 +15,16 @@ enum Status {
 struct  Node {
   virtual ~Node() = default;
   virtual Status Tick();
-  std::vector<Node*> children;
-  Status status;
+
+  Node(Node&& node) noexcept{
+    std::swap(status, node.status);
+  }
+  Node& operator=(Node&& node) noexcept {
+    std::swap(status, node.status);
+    return *this;
+  }
+
+  Status status = kFailure;
 };
 
 #endif  // CITYBUILDER_NODE_H
