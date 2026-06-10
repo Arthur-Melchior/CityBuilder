@@ -4,9 +4,11 @@
 
 #ifndef CITYBUILDER_SELECTOR_NODE_H
 #define CITYBUILDER_SELECTOR_NODE_H
-#include "node.h"
+#include <queue>
 
-struct SelectorNode : Node {
+#include "behaviour_tree_node.h"
+
+struct SelectorNode : behaviour_tree_node {
   Status Tick() override {
     const auto status = children[currentChild]->Tick();
 
@@ -25,7 +27,7 @@ struct SelectorNode : Node {
   }
 
   int currentChild = 0;
-  std::vector<Node*> children;
+  std::vector<behaviour_tree_node*> children;
 };
 
 #endif  // CITYBUILDER_SELECTOR_NODE_H

@@ -2,9 +2,9 @@
 // Created by Kalle on 07.05.2026.
 //
 
-#include "renderer.h"
+#include "../../include/graphics/renderer.h"
 
-#include <placeable.h>
+#include <placeables/placeable.h>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -12,7 +12,7 @@
 #include <optional>
 #include <vector>
 
-#include "renderer_display_box.h"
+#include "../../include/graphics/renderer_display_box.h"
 
 namespace citybuilder::graphics {
 
@@ -46,11 +46,10 @@ void Renderer::FirstRender(const std::span<game::Tile> background,
   states_.texture = &tile_sheet_;
   world_view_ = sf::View({0, 0}, view_port_size_);
   ui_view_ = sf::View({0, 0}, view_port_size_);
+
 }
 
 bool Renderer::Render() {
-
-
   while (const std::optional event = window_.pollEvent()) {
     if (event->is<sf::Event::Closed>()) {
       return false;
@@ -111,17 +110,17 @@ bool Renderer::Render() {
 }
 
 template <Placeable T>
-std::vector<sf::Vertex> Renderer::GenerateVertices(std::span<T> data) {
+std::vector<sf::Vertex> Renderer::GenerateVertices(std::span<T> placeables) {
   std::vector<sf::Vertex> vertex_vector;
 
-  for (const auto& tile : data) {
-    const auto tile_position = tile.position;
-    const auto texture_coords = tile.texture_coords;
+  for (const auto& obj : placeables) {
+    const auto obj_position = obj.position;
+    const auto texture_coords = obj.texture_coords;
 
-    const float left = tile_position.x * tile.size.x;
-    const float top = tile_position.y * tile.size.y;
-    const float right = left + tile.size.x;
-    const float bottom = top + tile.size.y;
+    const float left = obj_position.x * obj.size.x * pixel_per_size;
+    const float top = obj_position.y * obj.size.y * pixel_per_size;
+    const float right = left + obj.size.x * pixel_per_size;
+    const float bottom = top + obj.size.y * pixel_per_size;
 
     const auto tex_left = texture_coords.x * texture_size_.x;
     const auto tex_right = tex_left + texture_size_.x;

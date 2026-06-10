@@ -5,7 +5,7 @@
 #ifndef CITYBUILDER_VILLAGER_H
 #define CITYBUILDER_VILLAGER_H
 
-#include "behaviour_tree/node.h"
+#include "../behaviour_tree/behaviour_tree_node.h"
 #include "placeable.h"
 
 namespace citybuilder::game {
@@ -15,7 +15,7 @@ public:
   Vector2i position;
   Vector2i texture_coords;
   Vector2f size;
-  std::unique_ptr<Node> bt_root;
+  //std::unique_ptr<Node> bt_root;
   float happiness{};
  };
 

@@ -3,19 +3,20 @@
 //
 
 #include <game.h>
-#include <tile.h>
+#include <placeables/tile.h>
 
 #include <random>
 
+#include "../../API/include/file/save_manager.h"
+#include "../../API/include/graphics/fast_noise_lite.h"
+#include "../../API/include/graphics/renderer.h"
+#include "placeables/building.h"
+#include "placeables/placeable.h"
+#include "utils/context.h"
 #include "behaviour_tree/action_node.h"
-#include "behaviour_tree/node.h"
+#include "behaviour_tree/behaviour_tree_node.h"
 #include "behaviour_tree/selector_node.h"
-#include "building.h"
-#include "context.h"
-#include "fast_noise_lite.h"
-#include "placeable.h"
-#include "renderer.h"
-#include "save_manager.h"
+#include "placeables/display_box.h"
 
 void citybuilder::game::Game::StartGame() const {
   std::vector<Tile> tiles = GenerateRandomTiles();
@@ -38,7 +39,7 @@ void citybuilder::game::Game::StartGame() const {
 
   DisplayBox test{{30, 0}, {8, 10}, {40, 20}};
   test.text = "test";
-  test.font_size = 8;
+  test.font_size = 20;
 
   std::vector ui{test};
 
@@ -47,13 +48,13 @@ void citybuilder::game::Game::StartGame() const {
   // wander.action = []() { return kSuccess; };
   // node.children.emplace_back(&wander);
 
-  Villager villager{{0, 0}, {1, 1}, {32, 32}, std::make_unique<SelectorNode>(), 0};
-  std::vector<Villager> villagers{(std::move(villager))};
+  const Villager villager{{0, 0}, {1, 1}, {32, 32}, 0};
+  std::vector villagers{villager};
 
-  graphics::Renderer renderer(800, 600, "City Builder");
+  graphics::Renderer renderer(1920, 1080, "City Builder", true);
   renderer.FirstRender(tiles, buildings, ui);
   while (renderer.Render()) {
-    villager.bt_root->Tick();
+    //villager.bt_root->Tick();
   }
 }
 

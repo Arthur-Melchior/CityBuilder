@@ -5,22 +5,30 @@
 #ifndef CITYBUILDER_RENDERER_H
 #define CITYBUILDER_RENDERER_H
 
-#include <building.h>
-#include <tile.h>
 
-#include <SFML/Graphics.hpp>
 #include <span>
-
-#include "display_box.h"
-#include "game.h"
+#include <SFML/Graphics.hpp>
 #include "renderer_display_box.h"
+
+#include "placeables/tile.h"
+#include "placeables/building.h"
+#include "placeables/display_box.h"
+#include "game.h"
 
 namespace citybuilder::graphics {
 
 class Renderer {
  public:
-  Renderer(unsigned int width, unsigned int height, const std::string& name)
-      : window_(sf::VideoMode({width, height}), name) {}
+  Renderer(unsigned int width, unsigned int height, const std::string& name,
+           const bool hasAntialiasing) {
+    sf::ContextSettings settings;
+    if (hasAntialiasing) {
+      settings.antiAliasingLevel = 8;
+    }
+    window_ =
+        sf::RenderWindow(sf::VideoMode({width, height}), name,
+                         sf::Style::Default, sf::State::Windowed, settings);
+  }
 
   void FirstRender(std::span<game::Tile> background,
                    std::span<game::Building> buildings,
@@ -43,6 +51,7 @@ class Renderer {
 
   // tile stuff
   sf::Vector2f texture_size_ = {512, 512};
+  float pixel_per_size = 32;
   std::vector<sf::Vertex> background_tiles_;
   std::vector<sf::Vertex> foreground_tiles_;
   std::vector<RendererDisplayBox> display_boxes_;
@@ -52,7 +61,7 @@ class Renderer {
   sf::Vector2<int> current_mouse_position_ = {0, 0};
 
   // zoom stuff
-  sf::Vector2f view_port_size_{300,200};
+  sf::Vector2f view_port_size_{300, 200};
   float current_zoom_ = 1;
   float zoom_interval_ = 10;
   float min_zoom_ = 0.3f;

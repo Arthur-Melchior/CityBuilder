@@ -10,7 +10,7 @@
 namespace citybuilder::game {
 
 struct Tile {
-  Tile(const Vector2i position, const Vector2i texture_coords, const Vector2f size = {32,32})
+  Tile(const Vector2i position, const Vector2i texture_coords, const Vector2f size = {1,1})
       : position(position), texture_coords(texture_coords), size(size) {}
   Tile(const Vector2i position, const Vector2i texture_coords,
        const bool is_walkable)
@@ -20,7 +20,7 @@ struct Tile {
 
   Vector2i position;
   Vector2i texture_coords;
-  Vector2f size{32, 32};
+  Vector2f size{1, 1};
 
   bool is_walkable = true;
 };

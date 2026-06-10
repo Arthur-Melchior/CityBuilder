@@ -6,9 +6,9 @@
 #define CITYBUILDER_ACTION_NODE_H
 #include <functional>
 
-#include "node.h"
+#include "behaviour_tree_node.h"
 
-struct ActionNode : Node {
+struct ActionNode : behaviour_tree_node {
   Status Tick() override { return action(); }
   std::function<Status()> action;
 };

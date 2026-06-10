@@ -2,7 +2,7 @@
 // Created by Arthur on 28.05.2026.
 //
 
-#include "renderer_display_box.h"
+#include "../../include/graphics/renderer_display_box.h"
 
 #include <SFML/Window/Event.hpp>
 

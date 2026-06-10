@@ -4,9 +4,9 @@
 
 #ifndef CITYBUILDER_SEQUENCE_NODE_H
 #define CITYBUILDER_SEQUENCE_NODE_H
-#include "node.h"
+#include "behaviour_tree_node.h"
 
-struct SequenceNode : Node {
+struct SequenceNode : behaviour_tree_node {
   Status Tick() override {
     const auto status = children[current_child]->Tick();
 
@@ -23,7 +23,7 @@ struct SequenceNode : Node {
     return status;
   }
   int current_child = 0;
-  std::vector<Node*> children;
+  std::vector<behaviour_tree_node*> children;
 };
 
 #endif  // CITYBUILDER_SEQUENCE_NODE_H

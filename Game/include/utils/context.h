@@ -6,11 +6,11 @@
 #define CITYBUILDER_CONTEXT_H
 #include <vector>
 
-#include "building.h"
 #include "market.h"
-#include "resource.h"
-#include "tile.h"
-#include "villager.h"
+#include "placeables/building.h"
+#include "placeables/resource.h"
+#include "placeables/villager.h"
+#include "placeables/tile.h"
 
 struct Context {
   std::vector<citybuilder::game::Tile> tiles;

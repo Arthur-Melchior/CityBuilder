@@ -5,7 +5,7 @@
 #ifndef CITYBUILDER_PLACEABLE_H
 #define CITYBUILDER_PLACEABLE_H
 
-#include "vector2.h"
+#include "../utils/vector2.h"
 
 template <typename T>
 concept Placeable = requires(T a) {

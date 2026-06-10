@@ -8,8 +8,8 @@
 #include <random>
 #include <vector>
 
-#include "random_generator.h"
-#include "tile.h"
+#include "placeables/tile.h"
+#include "utils/random_generator.h"
 
 namespace citybuilder::game {
 
