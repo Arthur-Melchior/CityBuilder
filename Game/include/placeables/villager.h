@@ -14,7 +14,7 @@ class Villager {
 public:
   Vector2i position;
   Vector2i texture_coords;
-  Vector2f size;
+  Vector2i size;
   //std::unique_ptr<Node> bt_root;
   float happiness{};
  };

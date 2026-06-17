@@ -8,7 +8,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-#include <concepts>
 #include <optional>
 #include <vector>
 
@@ -24,29 +23,43 @@ void Renderer::FirstRender(const std::span<game::Tile> background,
     return;
   }
 
+  tile_sheet_.setSmooth(false);
+
   if (!font_.openFromFile("_assets/arial.ttf")) {
     return;
   }
 
+  bt_ = background;
+
   background_tiles_ = GenerateVertices(background);
   foreground_tiles_ = GenerateVertices(buildings);
   for (auto& ui_element : ui_elements) {
-    sf::RectangleShape shape{{ui_element.size.x, ui_element.size.y}};
+    sf::RectangleShape shape{{static_cast<float>(ui_element.size.x),
+                              static_cast<float>(ui_element.size.y)}};
     shape.setPosition(
         sf::Vector2f(ui_element.position.x, ui_element.position.y));
     shape.setFillColor(sf::Color::White);
 
     sf::Text text{font_, ui_element.text, ui_element.font_size};
-    text.setPosition(
-        sf::Vector2f(ui_element.position.x, ui_element.position.y));
+
+    const auto text_bounds = text.getLocalBounds();
+    text.setOrigin({
+        text_bounds.position.x + text_bounds.size.x / 2.f,
+        text_bounds.position.y + text_bounds.size.y / 2.f,
+    });
+    text.setPosition({
+        ui_element.position.x + ui_element.size.x / 2.f,
+        ui_element.position.y + ui_element.size.y / 2.f,
+    });
+
     text.setFillColor(sf::Color::Black);
     display_boxes_.emplace_back(shape, text);
   }
 
   states_.texture = &tile_sheet_;
   world_view_ = sf::View({0, 0}, view_port_size_);
-  ui_view_ = sf::View({0, 0}, view_port_size_);
-
+  ui_view_ = sf::View(
+      sf::FloatRect{{0.f, 0.f}, sf::Vector2f(window_.getSize())});
 }
 
 bool Renderer::Render() {
@@ -73,7 +86,7 @@ bool Renderer::Render() {
       world_view_.setSize(size * current_zoom_);
     }
 
-    for (auto display_box : display_boxes_) {
+    for (auto& display_box : display_boxes_) {
       display_box.HandleEvents(event, window_, ui_view_);
     }
   }
@@ -89,6 +102,8 @@ bool Renderer::Render() {
 
     previous_mouse_position_ = current_mouse_position_;
   }
+
+  background_tiles_ = GenerateVertices(bt_);
 
   window_.clear(sf::Color::Black);
 
@@ -117,15 +132,15 @@ std::vector<sf::Vertex> Renderer::GenerateVertices(std::span<T> placeables) {
     const auto obj_position = obj.position;
     const auto texture_coords = obj.texture_coords;
 
-    const float left = obj_position.x * obj.size.x * pixel_per_size;
-    const float top = obj_position.y * obj.size.y * pixel_per_size;
-    const float right = left + obj.size.x * pixel_per_size;
-    const float bottom = top + obj.size.y * pixel_per_size;
+    const float left = obj_position.x * obj.size.x * pixel_per_size_unit_;
+    const float top = obj_position.y * obj.size.y * pixel_per_size_unit_;
+    const float right = left + obj.size.x * pixel_per_size_unit_;
+    const float bottom = top + obj.size.y * pixel_per_size_unit_;
 
-    const auto tex_left = texture_coords.x * texture_size_.x;
-    const auto tex_right = tex_left + texture_size_.x;
-    const auto tex_top = texture_coords.y * texture_size_.y;
-    const auto tex_bottom = tex_top + texture_size_.y;
+    const auto tex_left = texture_coords.x * texture_size_.x + 0.5f;
+    const auto tex_right = tex_left + texture_size_.x - 1.0f;
+    const auto tex_top = texture_coords.y * texture_size_.y + 0.5f;
+    const auto tex_bottom = tex_top + texture_size_.y - 1.0f;
 
     vertex_vector.push_back(
         sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});

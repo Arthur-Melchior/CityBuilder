@@ -4,7 +4,6 @@
 
 #include "../../include/file/save_manager.h"
 
-#include "behaviour_tree/behaviour_tree_node.h"
 void SaveManager::Save(Context& context, const std::string& file_path) {
   nlohmann::json save;
 
@@ -76,8 +75,8 @@ Context SaveManager::Load(const std::string& file_path) {
     auto y = building["y"].get<int>();
     auto tex_x = building["tex_x"].get<int>();
     auto tex_y = building["tex_y"].get<int>();
-    auto size_x = building["size_x"].get<float>();
-    auto size_y = building["size_y"].get<float>();
+    auto size_x = building["size_x"].get<int>();
+    auto size_y = building["size_y"].get<int>();
 
     citybuilder::game::Building b{{x, y}, {tex_x, tex_y}, {size_x, size_y}};
 
@@ -99,9 +98,9 @@ Context SaveManager::Load(const std::string& file_path) {
     auto tex_y = villager["tex_y"].get<int>();
     auto happiness = villager["happiness"].get<float>();
 
-    // citybuilder::game::Villager v{{x, y}, {tex_x, tex_y},{0,0}, happiness};
-    //
-    // context.villagers.push_back(v);
+     citybuilder::game::Villager v{{x, y}, {tex_x, tex_y},{0,0}, happiness};
+
+     context.villagers.push_back(v);
   }
 
   for (auto& resource : data["resources"]) {

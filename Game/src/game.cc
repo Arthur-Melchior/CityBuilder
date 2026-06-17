@@ -17,6 +17,7 @@
 #include "behaviour_tree/behaviour_tree_node.h"
 #include "behaviour_tree/selector_node.h"
 #include "placeables/display_box.h"
+#include "graphics/renderer_display_box.h"
 
 void citybuilder::game::Game::StartGame() const {
   std::vector<Tile> tiles = GenerateRandomTiles();
@@ -37,9 +38,9 @@ void citybuilder::game::Game::StartGame() const {
   Place(b, tiles, world_size_width_);
   std::vector buildings{b};
 
-  DisplayBox test{{30, 0}, {8, 10}, {40, 20}};
+  DisplayBox test{{30, 0}, {8, 10}, {200, 200}};
   test.text = "test";
-  test.font_size = 20;
+  test.font_size = 50;
 
   std::vector ui{test};
 
@@ -51,10 +52,10 @@ void citybuilder::game::Game::StartGame() const {
   const Villager villager{{0, 0}, {1, 1}, {32, 32}, 0};
   std::vector villagers{villager};
 
-  graphics::Renderer renderer(1920, 1080, "City Builder", true);
+  graphics::Renderer renderer(1920, 1080, "City Builder", false);
   renderer.FirstRender(tiles, buildings, ui);
   while (renderer.Render()) {
-    //villager.bt_root->Tick();
+
   }
 }
 

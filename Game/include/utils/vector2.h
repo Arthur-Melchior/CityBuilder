@@ -21,6 +21,8 @@ struct Vector2 {
 
   T x = 0;
   T y = 0;
+
+  T Distance(Vector2& target) noexcept { return x - target.x + (y - target.y); }
 };
 
 using Vector2f = Vector2<float>;

@@ -41,6 +41,9 @@ class Renderer {
  private:
   sf::RenderStates states_;
 
+  std::span<game::Tile> bt_;
+  std::span<game::Tile> ft_;
+
   sf::View world_view_;
   sf::View ui_view_;
 
@@ -51,7 +54,7 @@ class Renderer {
 
   // tile stuff
   sf::Vector2f texture_size_ = {512, 512};
-  float pixel_per_size = 32;
+  float pixel_per_size_unit_ = 32;
   std::vector<sf::Vertex> background_tiles_;
   std::vector<sf::Vertex> foreground_tiles_;
   std::vector<RendererDisplayBox> display_boxes_;

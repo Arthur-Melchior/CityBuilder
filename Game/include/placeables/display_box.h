@@ -10,7 +10,7 @@ class DisplayBox {
 public:
   Vector2i position;
   Vector2i texture_coords;
-  Vector2f size;
+  Vector2i size;
   std::string text;
   unsigned int font_size = 30;
 };

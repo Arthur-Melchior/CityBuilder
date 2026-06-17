@@ -13,7 +13,7 @@ class Building {
  public:
   Vector2i position;
   Vector2i texture_coords;
-  Vector2f size;
+  Vector2i size;
 };
 
 // cost
