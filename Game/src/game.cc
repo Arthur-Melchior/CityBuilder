@@ -10,17 +10,20 @@
 #include "../../API/include/file/save_manager.h"
 #include "../../API/include/graphics/fast_noise_lite.h"
 #include "../../API/include/graphics/renderer.h"
-#include "placeables/building.h"
-#include "placeables/placeable.h"
-#include "utils/context.h"
 #include "behaviour_tree/action_node.h"
 #include "behaviour_tree/behaviour_tree_node.h"
 #include "behaviour_tree/selector_node.h"
-#include "placeables/display_box.h"
 #include "graphics/renderer_display_box.h"
+#include "pathfinding/pathfinder.h"
+#include "placeables/building.h"
+#include "placeables/display_box.h"
+#include "placeables/placeable.h"
+#include "utils/context.h"
 
 void citybuilder::game::Game::StartGame() const {
   std::vector<Tile> tiles = GenerateRandomTiles();
+  Pathfinder pathfinder{tiles, world_size_width_, world_size_height_};
+  auto path = pathfinder.FindPath({0, 0}, {100, 100});
 
   Building b{{0, 0}, {5, 10}, {5, 2}};
 
@@ -55,7 +58,6 @@ void citybuilder::game::Game::StartGame() const {
   graphics::Renderer renderer(1920, 1080, "City Builder", false);
   renderer.FirstRender(tiles, buildings, ui);
   while (renderer.Render()) {
-
   }
 }
 

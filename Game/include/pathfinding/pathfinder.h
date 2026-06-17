@@ -25,6 +25,16 @@ class Pathfinder {
       column.resize(height_);
     }
   }
+  Pathfinder(std::vector<citybuilder::game::Tile>& tiles, const int rows,
+             const int cols)
+      : width_(cols),
+        height_(rows),
+        map_(tiles.data(), rows, cols) {
+    path_node_map_.resize(width_);
+    for (auto& column : path_node_map_) {
+      column.resize(height_);
+    }
+  }
 
   std::vector<Vector2i> FindPath(Vector2i starting_position,
                                  Vector2i target_position);
@@ -33,7 +43,7 @@ class Pathfinder {
   int width_;
   int height_;
   std::mdspan<citybuilder::game::Tile, std::dextents<size_t, 2>> map_;
-  std::vector<std::vector<PathNode>> path_node_map_;
+  std::vector<std::vector<std::optional<PathNode>>> path_node_map_;
   std::priority_queue<PathNode> weight_queue_;
   std::array<PathNode*, 8> GetNeighbors(PathNode* path_node,
                                         Vector2i target_position, float cost);

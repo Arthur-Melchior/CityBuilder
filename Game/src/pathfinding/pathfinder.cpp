@@ -3,12 +3,14 @@
 //
 
 #include "pathfinding/pathfinder.h"
+
 #include <optional>
+#include <valarray>
 
 std::vector<Vector2i> Pathfinder::FindPath(Vector2i starting_position,
                                            Vector2i target_position) {
   const auto diff = starting_position - target_position;
-  const auto distance = static_cast<float>(diff.x + diff.y);
+  const auto distance = std::abs(static_cast<float>(diff.x + diff.y));
   PathNode currentNode({starting_position.x, starting_position.y}, distance, 0,
                        distance, nullptr);
 
@@ -66,9 +68,6 @@ PathNode* Pathfinder::GeneratePathNode(PathNode* parentNode,
                                        const float cost) {
   int x = new_node_position.x;
   int y = new_node_position.y;
-  if (std::optional node = path_node_map_[x][y]) {
-    return &node.value();
-  }
 
   if (x < 0) {
     x = 0;
@@ -82,11 +81,15 @@ PathNode* Pathfinder::GeneratePathNode(PathNode* parentNode,
     y = static_cast<int>(map_.extent(1) - 1);
   }
 
+  if (std::optional node = path_node_map_[x][y]) {
+    return &node.value();
+  }
+
   const auto distance =
       static_cast<float>(target_position.Distance(target_position));
 
   path_node_map_[x][y] = PathNode ({x, y}, distance, cost, distance + cost, parentNode);
-  weight_queue_.push(path_node_map_[x][y]);
+  weight_queue_.push(path_node_map_[x][y].value());
 
-  return &path_node_map_[x][y];
+  return &path_node_map_[x][y].value();
 }
