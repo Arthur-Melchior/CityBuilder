@@ -12,11 +12,17 @@ namespace citybuilder::game {
 
 class Villager {
 public:
-  Vector2i position;
   Vector2i texture_coords;
   Vector2i size;
-  //std::unique_ptr<Node> bt_root;
-  float happiness{};
+  float speed = 0;
+  //std::unique_ptr<Node> bt_root ;
+  float happiness = 0;
+  Status Move(const std::vector<Vector2i> &position, float delta_time);
+
+private:
+  Vector2i position_;
+  float delta_time_ = 0;
+  int path_index = 0;
  };
 
 //happiness
