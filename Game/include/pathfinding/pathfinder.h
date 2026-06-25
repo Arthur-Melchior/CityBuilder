@@ -11,44 +11,36 @@
 #include <vector>
 
 #include "placeables/tile.h"
-#include "path_node.h"
 
 class Pathfinder {
  public:
-  Pathfinder(std::vector<citybuilder::game::Tile>& tiles, const size_t rows,
-             const size_t cols)
-      : width_(static_cast<int>(cols)),
-        height_(static_cast<int>(rows)),
-        map_(tiles.data(), rows, cols) {
-    path_node_map_.resize(width_);
-    for (auto column : path_node_map_) {
-      column.resize(height_);
-    }
-  }
   Pathfinder(std::vector<citybuilder::game::Tile>& tiles, const int rows,
              const int cols)
-      : width_(cols),
-        height_(rows),
-        map_(tiles.data(), rows, cols) {
-    path_node_map_.resize(width_);
-    for (auto& column : path_node_map_) {
-      column.resize(height_);
-    }
+      : width_(cols), height_(rows), map_(tiles.data(), rows, cols) {
+    path_node_map_.resize(rows * cols);
   }
 
   std::vector<Vector2i> FindPath(Vector2i starting_position,
                                  Vector2i target_position);
 
  private:
-  int width_;
-  int height_;
+  int width_ = 0;
+  int height_ = 0;
+  float heuristic_force = 2.f;
   std::mdspan<citybuilder::game::Tile, std::dextents<size_t, 2>> map_;
-  std::vector<std::vector<std::optional<PathNode>>> path_node_map_;
-  std::priority_queue<PathNode> weight_queue_;
-  std::array<PathNode*, 8> GetNeighbors(PathNode* path_node,
-                                        Vector2i target_position, float cost);
-  PathNode* GeneratePathNode(PathNode* parentNode, Vector2i target_position,
-                             Vector2i new_node_position, float cost);
+  std::vector<uint8_t> path_node_map_;
+  ///@brief the first float is the priority and the second is the index
+  std::priority_queue<std::pair<float, int>, std::vector<std::pair<float, int>>,
+                      std::greater<std::pair<float, int>>>
+      weight_queue_;
+  std::vector<Vector2i> positions_;
+  std::vector<float> distances_;
+  std::vector<float> costs_;
+  std::vector<float> priorities_;
+  std::vector<float> parents_;
+  void CalculateNeighbors(int current_node, Vector2i target_position);
+  void CalculatePathNode(int parent, Vector2i target_position,
+                         Vector2i new_node_position, float cost);
 };
 
 #endif  // CITYBUILDER_PATHFINDER_H

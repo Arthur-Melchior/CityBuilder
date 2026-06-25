@@ -5,67 +5,65 @@
 #include "pathfinding/pathfinder.h"
 
 #include <optional>
-#include <valarray>
+
+int max_iterations = 10000;
 
 std::vector<Vector2i> Pathfinder::FindPath(Vector2i starting_position,
                                            Vector2i target_position) {
-  const auto diff = starting_position - target_position;
-  const auto distance = std::abs(static_cast<float>(diff.x + diff.y));
-  PathNode currentNode({starting_position.x, starting_position.y}, distance, 0,
-                       distance, nullptr);
+  // create first node
+  const auto distance = starting_position.Distance(target_position);
+  positions_.push_back(starting_position);
+  distances_.push_back(distance);
+  costs_.push_back(0);
+  priorities_.push_back(distance);
+  path_node_map_[starting_position.x * width_ + starting_position.y] = true;
+  weight_queue_.push({0, 0});
 
-  std::vector<Vector2i> path;
+  int current_iteration = 0;
+  int current_node = 0;
 
-  while (currentNode.position != target_position) {
-    currentNode.Neighbors =
-        GetNeighbors(&currentNode, target_position, currentNode.cost + 0.5f);
-    if (auto cheapestChoice = weight_queue_.top();
-        cheapestChoice != currentNode) {
-      currentNode = cheapestChoice;
-    } else {
-      currentNode.isDeadEnd = true;
-      currentNode.priority = std::numeric_limits<float>::max();
-    }
+  while (positions_.at(current_node) != target_position &&
+         current_iteration++ < max_iterations) {
+    auto [priority, index] = weight_queue_.top();
+    weight_queue_.pop();
+    current_node = index;
+
+    CalculateNeighbors(current_node, target_position);
   }
 
+  std::vector<Vector2i> path;
+  while (current_node != 0) {
+    path.push_back(positions_.at(current_node));
+    current_node = parents_.at(current_node - 1);
+  }
   std::reverse(path.begin(), path.end());
   return path;
 }
 
-std::array<PathNode*, 8> Pathfinder::GetNeighbors(
-    PathNode* path_node, const Vector2i target_position, const float cost) {
-  std::array<PathNode*, 8> neighbors{};
-  neighbors[0] = GeneratePathNode(
-      path_node, target_position,
-      {path_node->position.x, path_node->position.y - 1}, cost);
-  neighbors[1] = GeneratePathNode(
-      path_node, target_position,
-      {path_node->position.x + 1, path_node->position.y - 1}, cost + 0.4f);
-  neighbors[2] = GeneratePathNode(
-      path_node, target_position,
-      {path_node->position.x + 1, path_node->position.y}, cost);
-  neighbors[3] = GeneratePathNode(
-      path_node, target_position,
-      {path_node->position.x + 1, path_node->position.y + 1}, cost + 0.4f);
-  neighbors[4] = GeneratePathNode(
-      path_node, target_position,
-      {path_node->position.x, path_node->position.y + 1}, cost);
-  neighbors[5] = GeneratePathNode(
-      path_node, target_position,
-      {path_node->position.x - 1, path_node->position.y + 1}, cost + 0.4f);
-  neighbors[6] = GeneratePathNode(
-      path_node, target_position,
-      {path_node->position.x - 1, path_node->position.y - 1}, cost);
-  neighbors[7] = GeneratePathNode(
-      path_node, target_position,
-      {path_node->position.x - 1, path_node->position.y - 1}, cost);
-  return neighbors;
+void Pathfinder::CalculateNeighbors(const int current_node,
+                                    const Vector2i target_position) {
+  auto current_position = positions_.at(current_node);
+  const auto current_cost = costs_.at(current_node);
+  CalculatePathNode(current_node, target_position,
+                    {current_position.x, current_position.y - 1},
+                    current_cost + 1);
+  CalculatePathNode(current_node, target_position,
+                    {current_position.x + 1, current_position.y},
+                    current_cost + 1);
+  CalculatePathNode(current_node, target_position,
+                    {current_position.x, current_position.y + 1},
+                    current_cost + 1);
+  CalculatePathNode(current_node, target_position,
+                    {current_position.x - 1, current_position.y},
+                    current_cost + 1);
 }
 
-PathNode* Pathfinder::GeneratePathNode(PathNode* parentNode,
-                                       Vector2i target_position,
-                                       const Vector2i new_node_position,
-                                       const float cost) {
+void Pathfinder::CalculatePathNode(const int parent, Vector2i target_position,
+                                   Vector2i new_node_position,
+                                   float cost) {
+
+
+  // sanitize inputs
   int x = new_node_position.x;
   int y = new_node_position.y;
 
@@ -81,15 +79,19 @@ PathNode* Pathfinder::GeneratePathNode(PathNode* parentNode,
     y = static_cast<int>(map_.extent(1) - 1);
   }
 
-  if (std::optional node = path_node_map_[x][y]) {
-    return &node.value();
+  // checks if already exists or unwalkable
+  if (path_node_map_[x * width_ + y] || !map_[x, y].is_walkable) {
+    return;
   }
 
-  const auto distance =
-      static_cast<float>(target_position.Distance(target_position));
+  const auto distance = new_node_position.Distance(target_position) * heuristic_force;
+  const auto priority = distance + cost;
 
-  path_node_map_[x][y] = PathNode ({x, y}, distance, cost, distance + cost, parentNode);
-  weight_queue_.push(path_node_map_[x][y].value());
-
-  return &path_node_map_[x][y].value();
+  positions_.push_back(new_node_position);
+  distances_.push_back(distance);
+  costs_.push_back(cost);
+  priorities_.push_back(priority);
+  parents_.push_back(parent);
+  path_node_map_[x * width_ + y] = true;
+  weight_queue_.push({priority, distances_.size() - 1});
 }
