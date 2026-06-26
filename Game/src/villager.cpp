@@ -12,7 +12,7 @@ Status citybuilder::game::Villager::Move(const std::vector<Vector2i> &position,
 
   delta_time_ += delta_time;
   if (delta_time_ > 1 / speed) {
-    position_ = position.at(++path_index);
+    this->position = position.at(++path_index);
   }
 
   return kRunning;
