@@ -13,9 +13,11 @@ void RendererDisplayBox::HandleEvents(std::optional<sf::Event> event,
   const auto mouse_position =
       window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
 
-  if (shape.getGlobalBounds().contains(mouse_position)) {
-    shape.setFillColor(sf::Color{180, 180, 180});
-  } else {
-    shape.setFillColor(sf::Color::White);
+  if (is_button) {
+    if (shape.getGlobalBounds().contains(mouse_position)) {
+      shape.setFillColor(sf::Color{180, 180, 180});
+    } else {
+      shape.setFillColor(sf::Color::White);
+    }
   }
 }

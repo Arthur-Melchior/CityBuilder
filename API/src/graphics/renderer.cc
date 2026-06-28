@@ -53,7 +53,7 @@ void Renderer::FirstRender(const std::span<game::Tile> background,
     });
 
     text.setFillColor(sf::Color::Black);
-    display_boxes_.emplace_back(shape, text);
+    display_boxes_.emplace_back(shape, text, ui_element.is_button);
   }
 
   states_.texture = &tile_sheet_;
@@ -142,18 +142,21 @@ std::vector<sf::Vertex> Renderer::GenerateVertices(std::span<T> placeables) {
     const auto tex_top = texture_coords.y * texture_size_.y + 0.5f;
     const auto tex_bottom = tex_top + texture_size_.y - 1.0f;
 
-    vertex_vector.push_back(
-        sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
-    vertex_vector.push_back(
-        sf::Vertex{{right, top}, sf::Color::White, {tex_right, tex_top}});
-    vertex_vector.push_back(
-        sf::Vertex{{right, bottom}, sf::Color::White, {tex_right, tex_bottom}});
-    vertex_vector.push_back(
-        sf::Vertex{{left, top}, sf::Color::White, {tex_left, tex_top}});
-    vertex_vector.push_back(
-        sf::Vertex{{left, bottom}, sf::Color::White, {tex_left, tex_bottom}});
-    vertex_vector.push_back(
-        sf::Vertex{{right, bottom}, sf::Color::White, {tex_right, tex_bottom}});
+    const sf::Vertex top_left_vertex{
+        {left, top}, sf::Color::White, {tex_left, tex_top}};
+    const sf::Vertex top_right_vertex{
+        {right, top}, sf::Color::White, {tex_right, tex_top}};
+    const sf::Vertex bottom_right_vertex{
+        {right, bottom}, sf::Color::White, {tex_right, tex_bottom}};
+    const sf::Vertex bottom_left_vertex{
+        {left, bottom}, sf::Color::White, {tex_left, tex_bottom}};
+
+    vertex_vector.push_back(top_left_vertex);
+    vertex_vector.push_back(top_right_vertex);
+    vertex_vector.push_back(bottom_right_vertex);
+    vertex_vector.push_back(top_left_vertex);
+    vertex_vector.push_back(bottom_left_vertex);
+    vertex_vector.push_back(bottom_right_vertex);
   }
 
   return vertex_vector;

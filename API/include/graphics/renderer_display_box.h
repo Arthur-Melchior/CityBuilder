@@ -8,13 +8,16 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Window/Event.hpp>
+#include <utility>
 
 struct RendererDisplayBox {
-  RendererDisplayBox(const sf::RectangleShape &shape, const sf::Text &text)
-      : shape(shape), text(text) {}
+  RendererDisplayBox(sf::RectangleShape shape, sf::Text text,
+                     const bool is_button)
+      : shape(std::move(shape)), text(std::move(text)), is_button(is_button) {}
 
   sf::RectangleShape shape;
   sf::Text text;
+  bool is_button = false;
   void HandleEvents(std::optional<sf::Event>, const sf::RenderWindow&,
                     const sf::View &view);
 };

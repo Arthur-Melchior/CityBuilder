@@ -17,13 +17,14 @@
 #include "pathfinding/pathfinder.h"
 #include "placeables/building.h"
 #include "placeables/display_box.h"
+#include "placeables/horizontal_layout.h"
 #include "placeables/placeable.h"
 #include "utils/context.h"
 
 void citybuilder::game::Game::StartGame() const {
   std::vector<Tile> tiles = GenerateRandomTiles();
-  Pathfinder pathfinder{tiles, world_size_width_, world_size_height_};
-  auto path = pathfinder.FindPath({0, 0}, {100, 100});
+  // Pathfinder pathfinder{tiles, world_size_width_, world_size_height_};
+  // auto path = pathfinder.FindPath({0, 0}, {100, 100});
 
   Building b{{0, 0}, {5, 10}, {5, 2}};
 
@@ -45,7 +46,18 @@ void citybuilder::game::Game::StartGame() const {
   test.text = "test";
   test.font_size = 50;
 
-  std::vector ui{test};
+  HorizontalLayout horizontal_layout{};
+  horizontal_layout.display_box.position = {100, 0};
+  horizontal_layout.display_box.size = {200, 200};
+  horizontal_layout.display_box.texture_coords = {8, 10};
+  horizontal_layout.display_box.is_button = false;
+  horizontal_layout.AddChild(DisplayBox{{0, 0}, {0, 0}, {50, 100}, "oskour", 20, true});
+  horizontal_layout.AddChild(DisplayBox{{0, 0}, {0, 0}, {50, 100}, "oskour2", 20, true});
+
+  std::vector ui{horizontal_layout.display_box};
+  for (auto& child : *horizontal_layout.GetChildren()) {
+    ui.push_back(child);
+  }
 
   // SelectorNode node;
   // ActionNode wander;

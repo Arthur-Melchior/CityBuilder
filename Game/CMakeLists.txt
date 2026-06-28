@@ -18,6 +18,8 @@ set(SOURCES
         include/pathfinding/pathfinder.h
         include/pathfinding/path_node.h
         src/pathfinding/pathfinder.cpp
+        include/placeables/horizontal_layout.h
+        src/horizontal_layout.cc
 )
 
 add_library(Game STATIC ${SOURCES})
