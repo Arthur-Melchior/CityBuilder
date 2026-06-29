@@ -20,6 +20,7 @@ set(SOURCES
         src/pathfinding/pathfinder.cpp
         include/placeables/horizontal_layout.h
         src/horizontal_layout.cc
+        include/npc_manager.h
 )
 
 add_library(Game STATIC ${SOURCES})

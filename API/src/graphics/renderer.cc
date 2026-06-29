@@ -126,7 +126,7 @@ bool Renderer::Render() {
       if (mouseButtonPressed->button == sf::Mouse::Button::Left) {
         left_mouse_pressed = true;
       }
-            }
+    }
 
     // to zoom on mouse wheel
     if (const auto* mouseWheelScrolled =
@@ -136,7 +136,7 @@ bool Renderer::Render() {
       current_zoom_ = std::clamp(current_zoom_, min_zoom_, max_zoom_);
       const auto size = sf::Vector2f(window_.getSize());
       world_view_.setSize(size * current_zoom_);
-            }
+    }
 
     for (auto& display_box : display_boxes_) {
       display_box.HandleEvents(event, window_, ui_view_);
@@ -202,7 +202,40 @@ bool Renderer::Render() {
                              building_vertices.end());
 
     selected_tile->is_walkable = false;
-      }
+  }
+
+  villagers.clear();
+  auto vill = NPCManager::GetVillagers();
+  for (auto obj : *vill) {
+    const auto obj_position = obj.position;
+    const auto texture_coords = obj.texture_coords;
+
+    const float left = obj_position.x * obj.size.x * pixel_per_size_unit_;
+    const float top = obj_position.y * obj.size.y * pixel_per_size_unit_;
+    const float right = left + obj.size.x * pixel_per_size_unit_;
+    const float bottom = top + obj.size.y * pixel_per_size_unit_;
+
+    const auto tex_left = texture_coords.x * texture_size_.x + 0.5f;
+    const auto tex_right = tex_left + texture_size_.x - 1.0f;
+    const auto tex_top = texture_coords.y * texture_size_.y + 0.5f;
+    const auto tex_bottom = tex_top + texture_size_.y - 1.0f;
+
+    const sf::Vertex top_left_vertex{
+        {left, top}, sf::Color::White, {tex_left, tex_top}};
+    const sf::Vertex top_right_vertex{
+        {right, top}, sf::Color::White, {tex_right, tex_top}};
+    const sf::Vertex bottom_right_vertex{
+        {right, bottom}, sf::Color::White, {tex_right, tex_bottom}};
+    const sf::Vertex bottom_left_vertex{
+        {left, bottom}, sf::Color::White, {tex_left, tex_bottom}};
+
+    villagers.push_back(top_left_vertex);
+    villagers.push_back(top_right_vertex);
+    villagers.push_back(bottom_right_vertex);
+    villagers.push_back(top_left_vertex);
+    villagers.push_back(bottom_left_vertex);
+    villagers.push_back(bottom_right_vertex);
+  }
 
   window_.clear(sf::Color::Black);
 
@@ -211,6 +244,8 @@ bool Renderer::Render() {
                sf::PrimitiveType::Triangles, states_);
   window_.draw(foreground_tiles_.data(), foreground_tiles_.size(),
                sf::PrimitiveType::Triangles, states_);
+  window_.draw(villagers.data(), villagers.size(), sf::PrimitiveType::Triangles,
+               states_);
   if (show_hologram_) {
     window_.draw(hologram_.data(), hologram_.size(),
                  sf::PrimitiveType::Triangles, states_);

@@ -75,9 +75,6 @@ void citybuilder::game::Game::StartGame() const {
   // wander.action = []() { return kSuccess; };
   // node.children.emplace_back(&wander);
 
-  const Villager villager{{0, 0}, {1, 1}, {32, 32}, 0};
-  std::vector villagers{villager};
-
   renderer.FirstRender(tiles, buildings, ui);
   while (renderer.Render()) {
   }

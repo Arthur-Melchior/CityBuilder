@@ -61,6 +61,7 @@ class Renderer {
   float pixel_per_size_unit_ = 32;
   std::vector<sf::Vertex> background_tiles_;
   std::vector<sf::Vertex> foreground_tiles_;
+  std::vector<sf::Vertex> villagers;
   std::vector<sf::Vertex> hologram_;
   std::vector<RendererDisplayBox> display_boxes_;
   bool show_hologram_ = false;
