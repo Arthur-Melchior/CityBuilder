@@ -4,8 +4,10 @@
 
 #ifndef CITYBUILDER_DISPLAY_BOX_H
 #define CITYBUILDER_DISPLAY_BOX_H
-#include "placeable.h"
+#include <functional>
 #include <string>
+
+#include "placeable.h"
 
 class DisplayBox {
  public:
@@ -15,6 +17,7 @@ class DisplayBox {
   std::string text;
   unsigned int font_size = 30;
   bool is_button = false;
+  std::function<void()> action;
 };
 
 #endif  // CITYBUILDER_DISPLAY_BOX_H

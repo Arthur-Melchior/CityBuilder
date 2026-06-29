@@ -7,17 +7,32 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
 
-void RendererDisplayBox::HandleEvents(std::optional<sf::Event> event,
+void RendererDisplayBox::HandleEvents(const std::optional<sf::Event>& event,
                                       const sf::RenderWindow& window,
                                       const sf::View& view) {
   const auto mouse_position =
       window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
 
   if (is_button) {
-    if (shape.getGlobalBounds().contains(mouse_position)) {
-      shape.setFillColor(sf::Color{180, 180, 180});
+    if (InBounds(mouse_position.x, mouse_position.y)) {
+      ChangeColor(sf::Color{180, 180, 180});
+      if (event->getIf<sf::Event::MouseButtonPressed>() && action) {
+        action();
+      }
     } else {
-      shape.setFillColor(sf::Color::White);
+      ChangeColor(sf::Color::White);
     }
+
+  }
+}
+
+inline bool RendererDisplayBox::InBounds(const float x, const float y) const {
+  return x > position.x && x < position.x + size.x && y > position.y &&
+         y < position.y + size.y;
+}
+
+void RendererDisplayBox::ChangeColor(const sf::Color color) {
+  for (auto& vertex : vertices) {
+    vertex.color = color;
   }
 }

@@ -31,7 +31,7 @@ class Pathfinder {
   std::vector<uint8_t> path_node_map_;
   ///@brief the first float is the priority and the second is the index
   std::priority_queue<std::pair<float, int>, std::vector<std::pair<float, int>>,
-                      std::greater<std::pair<float, int>>>
+                      std::greater<>>
       weight_queue_;
   std::vector<Vector2i> positions_;
   std::vector<float> distances_;

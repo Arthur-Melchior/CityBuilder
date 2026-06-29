@@ -23,6 +23,7 @@
 
 void citybuilder::game::Game::StartGame() const {
   std::vector<Tile> tiles = GenerateRandomTiles();
+  graphics::Renderer renderer(1920, 1080, "City Builder", false);
   // Pathfinder pathfinder{tiles, world_size_width_, world_size_height_};
   // auto path = pathfinder.FindPath({0, 0}, {100, 100});
 
@@ -47,12 +48,22 @@ void citybuilder::game::Game::StartGame() const {
   test.font_size = 50;
 
   HorizontalLayout horizontal_layout{};
-  horizontal_layout.display_box.position = {100, 0};
-  horizontal_layout.display_box.size = {200, 200};
+  horizontal_layout.display_box.position = {0, 1080 - 200};
+  horizontal_layout.display_box.size = {1920, 200};
   horizontal_layout.display_box.texture_coords = {8, 10};
   horizontal_layout.display_box.is_button = false;
-  horizontal_layout.AddChild(DisplayBox{{0, 0}, {0, 0}, {50, 100}, "oskour", 20, true});
-  horizontal_layout.AddChild(DisplayBox{{0, 0}, {0, 0}, {50, 100}, "oskour2", 20, true});
+  DisplayBox d1{{0, 0}, {9, 9}, {100, 100}, "", 20, true};
+  d1.action = [&]() -> void {
+    renderer.SetHologramVisibility(true);
+    renderer.ChangeHologramTexture(d1.texture_coords);
+  };
+  DisplayBox d2{{0, 0}, {6, 10}, {100, 100}, "", 20, true};
+  d2.action = [&]() -> void {
+    renderer.SetHologramVisibility(true);
+    renderer.ChangeHologramTexture(d2.texture_coords);
+  };
+  horizontal_layout.AddChild(d1);
+  horizontal_layout.AddChild(d2);
 
   std::vector ui{horizontal_layout.display_box};
   for (auto& child : *horizontal_layout.GetChildren()) {
@@ -67,7 +78,6 @@ void citybuilder::game::Game::StartGame() const {
   const Villager villager{{0, 0}, {1, 1}, {32, 32}, 0};
   std::vector villagers{villager};
 
-  graphics::Renderer renderer(1920, 1080, "City Builder", false);
   renderer.FirstRender(tiles, buildings, ui);
   while (renderer.Render()) {
   }
