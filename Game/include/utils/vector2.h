@@ -5,8 +5,6 @@
 #ifndef CITYBUILDER_VECTOR2_H
 #define CITYBUILDER_VECTOR2_H
 
-#include <concepts>
-
 template <typename T>
 concept Number = requires(T a) { std::is_arithmetic_v<decltype(a)>; };
 

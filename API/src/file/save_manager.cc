@@ -51,13 +51,20 @@ void SaveManager::Save(Context& context, const std::string& file_path) {
   file << save.dump(2);
 }
 
-Context SaveManager::Load(const std::string& file_path) {
+std::expected<Context, std::string> SaveManager::Load(
+    const std::string& file_path) {
   std::ifstream file(file_path);
+  if (!file.is_open()) {
+    return std::unexpected("file not found");
+  }
 
   nlohmann::json data = nlohmann::json::parse(file);
 
-  Context context;
+  Context context{};
 
+  if (data["tiles"].empty()) {
+    return std::unexpected("no tiles found in save");
+  }
   for (const auto& tile : data["tiles"]) {
     auto x = tile["x"].get<int>();
     auto y = tile["y"].get<int>();
@@ -70,6 +77,9 @@ Context SaveManager::Load(const std::string& file_path) {
     context.tiles.push_back(t);
   }
 
+  if (data["buildings"].empty()) {
+    return std::unexpected("no buildings found in save");
+  }
   for (const auto& building : data["buildings"]) {
     auto x = building["x"].get<int>();
     auto y = building["y"].get<int>();
@@ -91,6 +101,9 @@ Context SaveManager::Load(const std::string& file_path) {
     context.markets.push_back(m);
   }
 
+  if (data["villagers"].empty()) {
+    return std::unexpected("no villagers found in save");
+  }
   for (auto& villager : data["villagers"]) {
     auto x = villager["x"].get<int>();
     auto y = villager["y"].get<int>();
@@ -98,9 +111,9 @@ Context SaveManager::Load(const std::string& file_path) {
     auto tex_y = villager["tex_y"].get<int>();
     auto happiness = villager["happiness"].get<float>();
 
-     citybuilder::game::Villager v{{x, y}, {tex_x, tex_y},{0,0}, happiness};
+    citybuilder::game::Villager v{{x, y}, {tex_x, tex_y}, {0, 0}, happiness};
 
-     context.villagers.push_back(v);
+    context.villagers.push_back(v);
   }
 
   for (auto& resource : data["resources"]) {

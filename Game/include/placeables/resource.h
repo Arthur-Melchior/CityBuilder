@@ -7,6 +7,8 @@
 
 namespace citybuilder::game {
 
+#include "string"
+
 class Resource {
 public:
   std::string name;

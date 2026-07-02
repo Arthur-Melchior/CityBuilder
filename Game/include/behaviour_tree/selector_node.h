@@ -5,7 +5,6 @@
 #ifndef CITYBUILDER_SELECTOR_NODE_H
 #define CITYBUILDER_SELECTOR_NODE_H
 #include <queue>
-
 #include "behaviour_tree_node.h"
 
 struct SelectorNode : behaviour_tree_node {

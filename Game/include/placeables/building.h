@@ -19,12 +19,12 @@ class Building {
   Vector2i position;
   Vector2i texture_coords;
   Vector2i size;
-  void OnCreate();
+  void OnCreate() const;
 
  private:
 };
 
-inline void Building::OnCreate() {
+inline void Building::OnCreate() const {
   for (int i = 0; i < 5; ++i) {
     NPCManager::SpawnNPC(position);
   }

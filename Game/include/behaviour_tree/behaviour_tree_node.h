@@ -4,7 +4,6 @@
 
 #ifndef CITYBUILDER_BEHAVIOURTREENODE_H
 #define CITYBUILDER_BEHAVIOURTREENODE_H
-#include <vector>
 
 enum Status {
   kFailure,

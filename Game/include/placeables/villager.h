@@ -7,13 +7,14 @@
 
 #include "../behaviour_tree/behaviour_tree_node.h"
 #include "placeable.h"
+#include "vector"
 
 namespace citybuilder::game {
 
 class Villager {
  public:
-  Villager(Vector2i position, Vector2i text_coords, Vector2i size,
-           float happiness)
+  Villager(const Vector2i position, const Vector2i text_coords,
+           const Vector2i size, const float happiness)
       : position(position),
         texture_coords(text_coords),
         size(size),

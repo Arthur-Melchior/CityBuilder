@@ -5,6 +5,7 @@
 #ifndef CITYBUILDER_SEQUENCE_NODE_H
 #define CITYBUILDER_SEQUENCE_NODE_H
 #include "behaviour_tree_node.h"
+#include "vector"
 
 struct SequenceNode : behaviour_tree_node {
   Status Tick() override {

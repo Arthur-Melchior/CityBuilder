@@ -10,6 +10,14 @@ int max_iterations = 10000;
 
 std::vector<Vector2i> Pathfinder::FindPath(Vector2i starting_position,
                                            Vector2i target_position) {
+  positions_.clear();
+  distances_.clear();
+  costs_.clear();
+  priorities_.clear();
+  parents_.clear();
+  while (!weight_queue_.empty()) weight_queue_.pop();
+  path_node_map_.clear();
+
   // create first node
   const auto distance = starting_position.Distance(target_position);
   positions_.push_back(starting_position);
@@ -59,10 +67,7 @@ void Pathfinder::CalculateNeighbors(const int current_node,
 }
 
 void Pathfinder::CalculatePathNode(const int parent, Vector2i target_position,
-                                   Vector2i new_node_position,
-                                   float cost) {
-
-
+                                   Vector2i new_node_position, float cost) {
   // sanitize inputs
   int x = new_node_position.x;
   int y = new_node_position.y;
@@ -84,7 +89,8 @@ void Pathfinder::CalculatePathNode(const int parent, Vector2i target_position,
     return;
   }
 
-  const auto distance = new_node_position.Distance(target_position) * heuristic_force;
+  const auto distance =
+      new_node_position.Distance(target_position) * heuristic_force;
   const auto priority = distance + cost;
 
   positions_.push_back(new_node_position);
