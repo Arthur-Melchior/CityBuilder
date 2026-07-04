@@ -17,7 +17,8 @@ namespace citybuilder::graphics {
 
 void Renderer::FirstRender(const std::span<game::Tile> background,
                            const std::span<game::Building> buildings,
-                           std::span<DisplayBox> ui_elements) {
+                           const std::span<game::Resource> resources,
+                           const std::span<DisplayBox> ui_elements) {
   if (!tile_sheet_.loadFromFile(
           "_assets/tile_sheets/complete_tile_sheet.png")) {
     return;
@@ -50,6 +51,7 @@ void Renderer::FirstRender(const std::span<game::Tile> background,
 
   background_tiles_ = GenerateVertices(background);
   foreground_tiles_ = GenerateVertices(buildings);
+  foreground_tiles_.append_range(GenerateVertices(resources));
   for (auto& ui_element : ui_elements) {
     const float left = ui_element.position.x;
     const float top = ui_element.position.y;
@@ -206,7 +208,7 @@ bool Renderer::Render() {
 
   villagers.clear();
   auto vill = NPCManager::GetVillagers();
-  for (auto obj : *vill) {
+  for (auto& obj : *vill) {
     const auto obj_position = obj.position;
     const auto texture_coords = obj.texture_coords;
 

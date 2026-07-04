@@ -36,6 +36,7 @@ class Renderer {
 
   void FirstRender(std::span<game::Tile> background,
                    std::span<game::Building> buildings,
+                   std::span<game::Resource> resources,
                    std::span<DisplayBox> ui_elements);
   bool Render();
 

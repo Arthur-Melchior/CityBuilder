@@ -6,6 +6,7 @@
 #define CITYBUILDER_VILLAGER_H
 
 #include "../behaviour_tree/behaviour_tree_node.h"
+#include "behaviour_tree/selector_node.h"
 #include "placeable.h"
 #include "vector"
 
@@ -23,14 +24,16 @@ class Villager {
   Vector2i position{0, 0};
   Vector2i texture_coords{0, 0};
   Vector2i size{0, 0};
-  float speed = 0;
+  float speed = 1;
   // std::unique_ptr<Node> bt_root ;
   float happiness = 0;
-  Status Move(const std::vector<Vector2i> &position, float delta_time);
+  // void Tick() { bt_.Tick(); };
+  Status Move(const std::vector<Vector2i> &path, float delta_time);
 
  private:
   float delta_time_ = 0;
   int path_index = 0;
+  // SelectorNode bt_{};
 };
 
 // happiness

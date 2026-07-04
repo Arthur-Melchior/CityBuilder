@@ -4,6 +4,7 @@
 
 #ifndef CITYBUILDER_BEHAVIOURTREENODE_H
 #define CITYBUILDER_BEHAVIOURTREENODE_H
+#include <concepts>
 
 enum Status {
   kFailure,
@@ -12,6 +13,7 @@ enum Status {
 };
 
 struct  behaviour_tree_node {
+  behaviour_tree_node() = default;
   virtual ~behaviour_tree_node() = default;
   virtual Status Tick();
 

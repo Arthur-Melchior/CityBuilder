@@ -21,6 +21,7 @@ set(SOURCES
         include/placeables/horizontal_layout.h
         src/horizontal_layout.cc
         include/npc_manager.h
+        src/villager.cpp
 )
 
 add_library(Game STATIC ${SOURCES})

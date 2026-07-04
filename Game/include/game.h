@@ -8,6 +8,7 @@
 #include <random>
 #include <vector>
 
+#include "placeables/resource.h"
 #include "placeables/tile.h"
 #include "utils/random_generator.h"
 
@@ -19,8 +20,9 @@ class Game {
       : world_size_width_(world_size_width),
         world_size_height_(world_size_height) {}
 
-  void StartGame() const;
-  [[nodiscard]] std::vector<Tile> GenerateRandomTiles() const;
+  void StartGame();
+  [[nodiscard]] std::vector<Tile> GenerateRandomTiles(int seed);
+  [[nodiscard]] std::vector<Resource> GenerateRandomResources(int seed) const;
 
   template <Placeable T>
   bool CanPlace(T& object, const std::vector<Tile>& map, int map_width) const {
@@ -61,6 +63,7 @@ class Game {
  private:
   int world_size_width_;
   int world_size_height_;
+  std::vector<Tile> tiles_;
   RandomGenerator random_generator_{};
 };
 
