@@ -48,10 +48,11 @@ void Renderer::FirstRender(const std::span<game::Tile> background,
                                  {9 * texture_size_.x, 11 * texture_size_.y}});
 
   bt_ = background;
+  re_ = resources;
 
   background_tiles_ = GenerateVertices(background);
   foreground_tiles_ = GenerateVertices(buildings);
-  foreground_tiles_.append_range(GenerateVertices(resources));
+  resources_ = GenerateVertices(resources);
   for (auto& ui_element : ui_elements) {
     const float left = ui_element.position.x;
     const float top = ui_element.position.y;
@@ -239,6 +240,8 @@ bool Renderer::Render() {
     villagers.push_back(bottom_right_vertex);
   }
 
+  resources_ = GenerateVertices(re_);
+
   window_.clear(sf::Color::Black);
 
   window_.setView(world_view_);
@@ -246,6 +249,7 @@ bool Renderer::Render() {
                sf::PrimitiveType::Triangles, states_);
   window_.draw(foreground_tiles_.data(), foreground_tiles_.size(),
                sf::PrimitiveType::Triangles, states_);
+  window_.draw(resources_.data(), resources_.size(), sf::PrimitiveType::Triangles, states_);
   window_.draw(villagers.data(), villagers.size(), sf::PrimitiveType::Triangles,
                states_);
   if (show_hologram_) {

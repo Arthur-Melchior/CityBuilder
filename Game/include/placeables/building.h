@@ -6,6 +6,7 @@
 #define CITYBUILDER_BUILDING_H
 
 #include "npc_manager.h"
+#include "villager.h"
 #include "placeable.h"
 
 namespace citybuilder::game {
@@ -39,11 +40,11 @@ class Building {
 inline void Building::OnCreate() const {
   for (int i = 0; i < 5; ++i) {
     if (building_type == Woodcutter) {
-      NPCManager::SpawnNPC(position, {1, 0});
+      NPCManager::SpawnNPC(position, {1, 0}, jWoodcutter);
     } else if (building_type == Farmer) {
-      NPCManager::SpawnNPC(position, {2, 0});
+      NPCManager::SpawnNPC(position, {2, 0}, jFarmer);
     } else if (building_type == Miner) {
-      NPCManager::SpawnNPC(position, {3, 0});
+      NPCManager::SpawnNPC(position, {3, 0}, jMiner);
     }
   }
 }

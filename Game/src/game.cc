@@ -81,8 +81,10 @@ void citybuilder::game::Game::StartGame() {
   // ActionNode wander;
   // wander.action = []() { return kSuccess; };
   // node.children.emplace_back(&wander);
-  for (int i = 0; i < 10000; ++i) {
-    NPCManager::SpawnNPC(GetRandomWalkablePosition(), {1, 0});
+  for (int i = 0; i < 1000; ++i) {
+    NPCManager::SpawnNPC(
+        GetRandomWalkablePosition(), {1, 0},
+        static_cast<VillagerJob>(random_generator_.Random(0, jLazyBum)));
   }
 
   renderer.FirstRender(tiles_, buildings, resources_, ui);
@@ -93,9 +95,31 @@ void citybuilder::game::Game::StartGame() {
       if (villager.move_status == kRunning) {
         villager.move_status = villager.Move(
             villager.current_path, clock.getElapsedTime().asSeconds());
-      } else if (villager.move_status == kSuccess) {
-        villager.current_path =
-            pathfinder.FindPath(villager.position, GetRandomWalkablePosition());
+      } else {
+        if (villager.resource_to_find == nullptr) {
+          auto resource_to_find = villager.job == jFarmer ? Carrot : villager.job == jMiner ? Pumpkin : Egg;
+          if (auto closest_resource = GetClosestResourcePosition(
+                  villager.position, resource_to_find)) {
+            villager.resource_to_find = closest_resource;
+          } else {
+            continue;
+          }
+
+        } else {
+          if (villager.resource_to_find >= resources_.data() &&
+              villager.resource_to_find <
+                  resources_.data() + resources_.size()) {
+            auto it = resources_.begin() +
+                      (villager.resource_to_find - resources_.data());
+            resources_.erase(it);
+          }
+          renderer.re_ = resources_;
+          villager.resource_to_find = nullptr;
+          continue;
+        }
+
+        villager.current_path = pathfinder.FindPath(
+            villager.position, villager.resource_to_find->position);
         villager.move_status = villager.Move(
             villager.current_path, clock.getElapsedTime().asSeconds());
       }

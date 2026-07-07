@@ -34,13 +34,12 @@ void SaveManager::Save(Context& context, const std::string& file_path) {
   }
 
   for (auto& villager : context.villagers) {
-    save["villagers"].push_back({
-        {"x", villager.position.x},
-        {"y", villager.position.y},
-        {"tex_x", villager.texture_coords.x},
-        {"tex_y", villager.texture_coords.y},
-        {"happiness", villager.happiness},
-    });
+    save["villagers"].push_back({{"x", villager.position.x},
+                                 {"y", villager.position.y},
+                                 {"tex_x", villager.texture_coords.x},
+                                 {"tex_y", villager.texture_coords.y},
+                                 {"happiness", villager.happiness},
+                                 {"job", villager.job}});
   }
 
   for (auto& resource : context.resources) {
@@ -92,7 +91,8 @@ std::expected<Context, std::string> SaveManager::Load(
     auto size_x = building["size_x"].get<int>();
     auto size_y = building["size_y"].get<int>();
 
-    citybuilder::game::Building b{{x, y}, {tex_x, tex_y}, {size_x, size_y}, citybuilder::game::Cantina};
+    citybuilder::game::Building b{
+        {x, y}, {tex_x, tex_y}, {size_x, size_y}, citybuilder::game::Cantina};
 
     context.buildings.push_back(b);
   }
@@ -114,8 +114,9 @@ std::expected<Context, std::string> SaveManager::Load(
     auto tex_x = villager["tex_x"].get<int>();
     auto tex_y = villager["tex_y"].get<int>();
     auto happiness = villager["happiness"].get<float>();
+    auto job = villager["job"].get<citybuilder::game::VillagerJob>();
 
-    citybuilder::game::Villager v{{x, y}, {tex_x, tex_y}, {0, 0}, happiness};
+    citybuilder::game::Villager v{{x, y}, {tex_x, tex_y}, {0, 0}, happiness, job};
 
     context.villagers.push_back(v);
   }

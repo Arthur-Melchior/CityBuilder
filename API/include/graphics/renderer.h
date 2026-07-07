@@ -42,6 +42,7 @@ class Renderer {
                    std::span<game::Resource> resources,
                    std::span<DisplayBox> ui_elements);
   bool Render();
+  std::span<game::Resource> re_;
 
   template <Placeable T>
   std::vector<sf::Vertex> GenerateVertices(std::span<T>);
@@ -65,6 +66,7 @@ class Renderer {
   float pixel_per_size_unit_ = 32;
   std::vector<sf::Vertex> background_tiles_;
   std::vector<sf::Vertex> foreground_tiles_;
+  std::vector<sf::Vertex> resources_;
   std::vector<sf::Vertex> villagers;
   std::vector<sf::Vertex> hologram_;
   std::vector<RendererDisplayBox> display_boxes_;
