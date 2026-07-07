@@ -82,8 +82,7 @@ void citybuilder::game::Game::StartGame() {
   // wander.action = []() { return kSuccess; };
   // node.children.emplace_back(&wander);
   for (int i = 0; i < 10000; ++i) {
-    NPCManager::SpawnNPC(GetRandomWalkablePosition(),
-                         {1, 0});
+    NPCManager::SpawnNPC(GetRandomWalkablePosition(), {1, 0});
   }
 
   renderer.FirstRender(tiles_, buildings, resources_, ui);
@@ -94,10 +93,9 @@ void citybuilder::game::Game::StartGame() {
       if (villager.move_status == kRunning) {
         villager.move_status = villager.Move(
             villager.current_path, clock.getElapsedTime().asSeconds());
-      } else {
-        villager.current_path = pathfinder.FindPath(
-            villager.position,
-            GetRandomWalkablePosition());
+      } else if (villager.move_status == kSuccess) {
+        villager.current_path =
+            pathfinder.FindPath(villager.position, GetRandomWalkablePosition());
         villager.move_status = villager.Move(
             villager.current_path, clock.getElapsedTime().asSeconds());
       }
@@ -166,16 +164,16 @@ citybuilder::game::Game::GenerateRandomResources(const int seed) const {
       const Vector2i position = {i, j};
       const Vector2i texture_coords = {-1, -1};
 
-      Resource resource{{""}, position, texture_coords, {1, 1}};
+      Resource resource{None, position, texture_coords, {1, 1}};
 
       if (noiseValue < 0.5f && noiseValue > 0.25f) {
-        resource.name = "egg";
+        resource.resource_type = Egg;
         resource.texture_coords = {0, 3};
       } else if (noiseValue < 0.75f && noiseValue > 0.25f) {
-        resource.name = "carrot";
+        resource.resource_type = Pumpkin;
         resource.texture_coords = {10, 9};
       } else if (noiseValue < 1.f && noiseValue > 0.25f) {
-        resource.name = "pumpkin";
+        resource.resource_type = Carrot;
         resource.texture_coords = {4, 5};
       }
 

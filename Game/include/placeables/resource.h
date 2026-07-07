@@ -8,9 +8,16 @@
 
 namespace citybuilder::game {
 
+enum ResourceType {
+  Egg,
+  Pumpkin,
+  Carrot,
+  None,
+};
+
 class Resource {
 public:
-  std::string name;
+  ResourceType resource_type = None;
   Vector2i position;
   Vector2i texture_coords;
   Vector2i size{1, 1};

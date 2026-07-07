@@ -44,7 +44,7 @@ void SaveManager::Save(Context& context, const std::string& file_path) {
   }
 
   for (auto& resource : context.resources) {
-    save["resources"].push_back({{"name", resource.name},
+    save["resources"].push_back({{"type", resource.resource_type},
                                  {"x", resource.position.x},
                                  {"y", resource.position.y},
                                  {"tex_x", resource.texture_coords.x},
@@ -121,13 +121,13 @@ std::expected<Context, std::string> SaveManager::Load(
   }
 
   for (auto& resource : data["resources"]) {
-    auto name = resource["name"].get<std::string>();
+    auto type = resource["type"].get<citybuilder::game::ResourceType>();
     auto x = resource["x"].get<int>();
     auto y = resource["y"].get<int>();
     auto tex_x = resource["tex_x"].get<int>();
     auto tex_y = resource["tex_y"].get<int>();
 
-    citybuilder::game::Resource r{name, {x, y}, {tex_x, tex_y}, {1, 1}};
+    citybuilder::game::Resource r{type, {x, y}, {tex_x, tex_y}, {1, 1}};
 
     context.resources.push_back(r);
   }

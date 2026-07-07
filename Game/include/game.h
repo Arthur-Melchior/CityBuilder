@@ -72,12 +72,13 @@ class Game {
     return {x, y};
   }
 
-  Vector2i GetClosestResourcePosition(Vector2i position) {
+  Vector2i GetClosestResourcePosition(Vector2i position,
+                                      ResourceType resource_type) {
     Vector2i p{0,0};
     int distance = 10000;
 
     for (auto resource : resources_) {
-      if (resource.position.Distance(position) < distance) {
+      if (resource.resource_type == resource_type && resource.position.Distance(position) < distance) {
         p = resource.position;
       }
     }
