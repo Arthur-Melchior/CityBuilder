@@ -24,11 +24,13 @@ class Villager {
   Vector2i position{0, 0};
   Vector2i texture_coords{0, 0};
   Vector2i size{0, 0};
-  float speed = 1;
+  float speed = 3;
   // std::unique_ptr<Node> bt_root ;
   float happiness = 0;
   // void Tick() { bt_.Tick(); };
   Status Move(const std::vector<Vector2i> &path, float delta_time);
+  Status move_status = kFailure;
+  std::vector<Vector2i> current_path;
 
  private:
   float delta_time_ = 0;

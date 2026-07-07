@@ -8,7 +8,7 @@
 // }
 Status citybuilder::game::Villager::Move(const std::vector<Vector2i> &path,
                                          const float delta_time) {
-  if (path_index == path.size()) {
+  if (path.empty() || position == path.back()) {
     path_index = 0;
     return kSuccess;
   }

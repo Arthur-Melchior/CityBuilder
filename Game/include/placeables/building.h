@@ -10,15 +10,27 @@
 
 namespace citybuilder::game {
 
+enum BuildingType {
+  Cantina,
+  Woodcutter,
+  Farmer,
+  Miner,
+};
+
 class Building {
  public:
-  Building(Vector2i position, Vector2i text_coords, Vector2i size)
-      : position(position), texture_coords(text_coords), size(size) {
+  Building(Vector2i position, Vector2i text_coords, Vector2i size,
+           BuildingType building_type)
+      : position(position),
+        texture_coords(text_coords),
+        size(size),
+        building_type(building_type) {
     OnCreate();
   }
   Vector2i position;
   Vector2i texture_coords;
   Vector2i size;
+  BuildingType building_type;
   void OnCreate() const;
 
  private:
@@ -26,7 +38,13 @@ class Building {
 
 inline void Building::OnCreate() const {
   for (int i = 0; i < 5; ++i) {
-    NPCManager::SpawnNPC(position);
+    if (building_type == Woodcutter) {
+      NPCManager::SpawnNPC(position, {1, 0});
+    } else if (building_type == Farmer) {
+      NPCManager::SpawnNPC(position, {2, 0});
+    } else if (building_type == Miner) {
+      NPCManager::SpawnNPC(position, {3, 0});
+    }
   }
 }
 

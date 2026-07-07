@@ -197,7 +197,7 @@ bool Renderer::Render() {
 
   if (show_hologram_ && left_mouse_pressed && is_walkable &&
       selected_tile != nullptr) {
-    game::Building building{{tile_x, tile_y}, hologram_texture_coords_, {1, 1}};
+    game::Building building{{tile_x, tile_y}, hologram_texture_coords_, {1, 1}, hologram_type_};
 
     auto building_vertices = GenerateVertices(std::span{&building, 1});
     foreground_tiles_.insert(foreground_tiles_.end(), building_vertices.begin(),

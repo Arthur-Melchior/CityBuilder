@@ -23,13 +23,13 @@
 
 void citybuilder::game::Game::StartGame() {
   tiles_ = GenerateRandomTiles(2);
-  std::vector<Resource> resources = GenerateRandomResources(2);
+  resources_ = GenerateRandomResources(2);
   graphics::Renderer renderer(1920, 1080, "City Builder", false);
   sf::Clock clock{};
-  // Pathfinder pathfinder{tiles, world_size_width_, world_size_height_};
+  Pathfinder pathfinder{tiles_, world_size_width_, world_size_height_};
   // auto path = pathfinder.FindPath({0, 0}, {100, 100});
 
-  Building b{{0, 0}, {5, 10}, {5, 2}};
+  Building b{{0, 0}, {5, 10}, {5, 2}, Cantina};
 
   const int width = static_cast<int>(tiles_.size()) / world_size_width_ - 1;
   const int height = static_cast<int>(tiles_.size()) / world_size_height_ - 1;
@@ -45,27 +45,32 @@ void citybuilder::game::Game::StartGame() {
   Place(b, tiles_, world_size_width_);
   std::vector buildings{b};
 
-  DisplayBox test{{30, 0}, {8, 10}, {200, 200}};
-  test.text = "test";
-  test.font_size = 50;
-
   HorizontalLayout horizontal_layout{};
-  horizontal_layout.display_box.position = {0, 1080 - 200};
-  horizontal_layout.display_box.size = {1920, 200};
+  horizontal_layout.display_box.position = {300, 1080 - 200};
+  horizontal_layout.display_box.size = {1920 - 600, 150};
   horizontal_layout.display_box.texture_coords = {8, 10};
   horizontal_layout.display_box.is_button = false;
   DisplayBox d1{{0, 0}, {9, 9}, {100, 100}, "", 20, true};
   d1.action = [&]() -> void {
     renderer.SetHologramVisibility(true);
     renderer.ChangeHologramTexture(d1.texture_coords);
+    renderer.SetHologramType(Woodcutter);
   };
   DisplayBox d2{{0, 0}, {6, 10}, {100, 100}, "", 20, true};
   d2.action = [&]() -> void {
     renderer.SetHologramVisibility(true);
     renderer.ChangeHologramTexture(d2.texture_coords);
+    renderer.SetHologramType(Farmer);
+  };
+  DisplayBox d3{{0, 0}, {5, 10}, {100, 100}, "", 20, true};
+  d3.action = [&]() -> void {
+    renderer.SetHologramVisibility(true);
+    renderer.ChangeHologramTexture(d3.texture_coords);
+    renderer.SetHologramType(Miner);
   };
   horizontal_layout.AddChild(d1);
   horizontal_layout.AddChild(d2);
+  horizontal_layout.AddChild(d3);
 
   std::vector ui{horizontal_layout.display_box};
   for (auto& child : *horizontal_layout.GetChildren()) {
@@ -76,15 +81,28 @@ void citybuilder::game::Game::StartGame() {
   // ActionNode wander;
   // wander.action = []() { return kSuccess; };
   // node.children.emplace_back(&wander);
+  for (int i = 0; i < 10000; ++i) {
+    NPCManager::SpawnNPC(GetRandomWalkablePosition(),
+                         {1, 0});
+  }
 
-  renderer.FirstRender(tiles_, buildings, resources, ui);
+  renderer.FirstRender(tiles_, buildings, resources_, ui);
   std::vector<Vector2i> p{{20, 20}, {21, 20}, {22, 20}, {23, 20},
                           {24, 20}, {25, 20}, {26, 20}, {27, 20}};
   while (renderer.Render()) {
     for (auto& villager : *NPCManager::GetVillagers()) {
-      villager.Move(p, clock.getElapsedTime().asSeconds());
-      clock.restart();
+      if (villager.move_status == kRunning) {
+        villager.move_status = villager.Move(
+            villager.current_path, clock.getElapsedTime().asSeconds());
+      } else {
+        villager.current_path = pathfinder.FindPath(
+            villager.position,
+            GetRandomWalkablePosition());
+        villager.move_status = villager.Move(
+            villager.current_path, clock.getElapsedTime().asSeconds());
+      }
     }
+    clock.restart();
   }
 }
 

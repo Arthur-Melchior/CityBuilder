@@ -92,7 +92,7 @@ std::expected<Context, std::string> SaveManager::Load(
     auto size_x = building["size_x"].get<int>();
     auto size_y = building["size_y"].get<int>();
 
-    citybuilder::game::Building b{{x, y}, {tex_x, tex_y}, {size_x, size_y}};
+    citybuilder::game::Building b{{x, y}, {tex_x, tex_y}, {size_x, size_y}, citybuilder::game::Cantina};
 
     context.buildings.push_back(b);
   }

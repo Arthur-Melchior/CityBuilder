@@ -11,7 +11,7 @@
 
 class NPCManager {
  public:
-  static void SpawnNPC(Vector2i position);
+  static void SpawnNPC(Vector2i position, Vector2i text_coords);
   static std::vector<citybuilder::game::Villager>* GetVillagers() {
     return &npcs_;
   };
@@ -19,8 +19,8 @@ class NPCManager {
  private:
   inline static std::vector<citybuilder::game::Villager> npcs_;
 };
-inline void NPCManager::SpawnNPC(const Vector2i position) {
-  npcs_.push_back(citybuilder::game::Villager{position, {2, 2}, {1, 1}, 0});
+inline void NPCManager::SpawnNPC(const Vector2i position, const Vector2i text_coords) {
+  npcs_.push_back(citybuilder::game::Villager{position, text_coords, {1, 1}, 0});
 }
 
 #endif  // CITYBUILDER_NPC_MANAGER_H

@@ -16,7 +16,9 @@ std::vector<Vector2i> Pathfinder::FindPath(Vector2i starting_position,
   priorities_.clear();
   parents_.clear();
   while (!weight_queue_.empty()) weight_queue_.pop();
-  path_node_map_.clear();
+  for (auto& node : path_node_map_) {
+    node = false;
+  }
 
   // create first node
   const auto distance = starting_position.Distance(target_position);
@@ -84,8 +86,8 @@ void Pathfinder::CalculatePathNode(const int parent, Vector2i target_position,
     y = static_cast<int>(map_.extent(1) - 1);
   }
 
-  // checks if already exists or unwalkable
-  if (path_node_map_[x * width_ + y] || !map_[x, y].is_walkable) {
+  // checks if already exists or unwalkable or target position
+  if ((path_node_map_.at(x * width_ + y) || !map_[x, y].is_walkable) && new_node_position != target_position) {
     return;
   }
 
@@ -98,6 +100,6 @@ void Pathfinder::CalculatePathNode(const int parent, Vector2i target_position,
   costs_.push_back(cost);
   priorities_.push_back(priority);
   parents_.push_back(parent);
-  path_node_map_[x * width_ + y] = true;
+  path_node_map_.at(x * width_ + y) = true;
   weight_queue_.push({priority, distances_.size() - 1});
 }

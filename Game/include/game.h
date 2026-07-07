@@ -26,8 +26,8 @@ class Game {
 
   template <Placeable T>
   bool CanPlace(T& object, const std::vector<Tile>& map, int map_width) const {
-    const auto tile_index = object.position.x - 1 +
-                          (object.position.y - 1) * map_width;
+    const auto tile_index =
+        object.position.x - 1 + (object.position.y - 1) * map_width;
 
     for (int x = 0; x < object.size.x; ++x) {
       if (tile_index + x > map.size() - 1) {
@@ -48,8 +48,8 @@ class Game {
 
   template <Placeable T>
   void Place(T& object, std::vector<Tile>& map, int map_width) const {
-    const auto tile_index = object.position.x - 1 +
-                          (object.position.y - 1) * map_width;
+    const auto tile_index =
+        object.position.x - 1 + (object.position.y - 1) * map_width;
 
     for (int x = 0; x < object.size.x; ++x) {
       const auto x_index = x * map_width;
@@ -60,10 +60,36 @@ class Game {
     }
   };
 
+  Vector2i GetRandomWalkablePosition() const {
+    auto x = random_generator_.Random(0, world_size_width_ - 1);
+    auto y = random_generator_.Random(0, world_size_height_ - 1);
+
+    while (!tiles_.at(x * world_size_width_ + y).is_walkable) {
+      x = random_generator_.Random(0, world_size_width_ - 1);
+      y = random_generator_.Random(0, world_size_height_ - 1);
+    }
+
+    return {x, y};
+  }
+
+  Vector2i GetClosestResourcePosition(Vector2i position) {
+    Vector2i p{0,0};
+    int distance = 10000;
+
+    for (auto resource : resources_) {
+      if (resource.position.Distance(position) < distance) {
+        p = resource.position;
+      }
+    }
+
+    return p;
+  }
+
  private:
   int world_size_width_;
   int world_size_height_;
   std::vector<Tile> tiles_;
+  std::vector<Resource> resources_;
   RandomGenerator random_generator_{};
 };
 

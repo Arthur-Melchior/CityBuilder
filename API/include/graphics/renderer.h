@@ -33,6 +33,9 @@ class Renderer {
   void SetHologramVisibility(const bool visible) {
     show_hologram_ = visible;
   }
+  void SetHologramType(const game::BuildingType building_type) {
+    hologram_type_ = building_type;
+  }
 
   void FirstRender(std::span<game::Tile> background,
                    std::span<game::Building> buildings,
@@ -67,6 +70,7 @@ class Renderer {
   std::vector<RendererDisplayBox> display_boxes_;
   bool show_hologram_ = false;
   Vector2i hologram_texture_coords_ = {0, 0};
+  game::BuildingType hologram_type_;
 
   // mouse stuff
   sf::Vector2<int> previous_mouse_position_ = {0, 0};
