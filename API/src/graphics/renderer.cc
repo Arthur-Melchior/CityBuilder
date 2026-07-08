@@ -198,7 +198,8 @@ bool Renderer::Render() {
 
   if (show_hologram_ && left_mouse_pressed && is_walkable &&
       selected_tile != nullptr) {
-    game::Building building{{tile_x, tile_y}, hologram_texture_coords_, {1, 1}, hologram_type_};
+    game::Building building{
+        {tile_x, tile_y}, hologram_texture_coords_, {1, 1}, hologram_type_};
 
     auto building_vertices = GenerateVertices(std::span{&building, 1});
     foreground_tiles_.insert(foreground_tiles_.end(), building_vertices.begin(),
@@ -207,39 +208,7 @@ bool Renderer::Render() {
     selected_tile->is_walkable = false;
   }
 
-  villagers.clear();
-  auto vill = NPCManager::GetVillagers();
-  for (auto& obj : *vill) {
-    const auto obj_position = obj.position;
-    const auto texture_coords = obj.texture_coords;
-
-    const float left = obj_position.x * obj.size.x * pixel_per_size_unit_;
-    const float top = obj_position.y * obj.size.y * pixel_per_size_unit_;
-    const float right = left + obj.size.x * pixel_per_size_unit_;
-    const float bottom = top + obj.size.y * pixel_per_size_unit_;
-
-    const auto tex_left = texture_coords.x * texture_size_.x + 0.5f;
-    const auto tex_right = tex_left + texture_size_.x - 1.0f;
-    const auto tex_top = texture_coords.y * texture_size_.y + 0.5f;
-    const auto tex_bottom = tex_top + texture_size_.y - 1.0f;
-
-    const sf::Vertex top_left_vertex{
-        {left, top}, sf::Color::White, {tex_left, tex_top}};
-    const sf::Vertex top_right_vertex{
-        {right, top}, sf::Color::White, {tex_right, tex_top}};
-    const sf::Vertex bottom_right_vertex{
-        {right, bottom}, sf::Color::White, {tex_right, tex_bottom}};
-    const sf::Vertex bottom_left_vertex{
-        {left, bottom}, sf::Color::White, {tex_left, tex_bottom}};
-
-    villagers.push_back(top_left_vertex);
-    villagers.push_back(top_right_vertex);
-    villagers.push_back(bottom_right_vertex);
-    villagers.push_back(top_left_vertex);
-    villagers.push_back(bottom_left_vertex);
-    villagers.push_back(bottom_right_vertex);
-  }
-
+  villagers = GenerateVertices(std::span{*NPCManager::GetVillagers()});
   resources_ = GenerateVertices(re_);
 
   window_.clear(sf::Color::Black);
@@ -249,7 +218,8 @@ bool Renderer::Render() {
                sf::PrimitiveType::Triangles, states_);
   window_.draw(foreground_tiles_.data(), foreground_tiles_.size(),
                sf::PrimitiveType::Triangles, states_);
-  window_.draw(resources_.data(), resources_.size(), sf::PrimitiveType::Triangles, states_);
+  window_.draw(resources_.data(), resources_.size(),
+               sf::PrimitiveType::Triangles, states_);
   window_.draw(villagers.data(), villagers.size(), sf::PrimitiveType::Triangles,
                states_);
   if (show_hologram_) {
