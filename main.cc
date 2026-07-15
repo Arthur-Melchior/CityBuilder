@@ -1,7 +1,7 @@
-#include "game.h"
+#include "start_menu.h"
 
 int main() {
-  citybuilder::game::Game game (200, 200);
-  game.StartGame();
+  StartMenu start_menu{};
+  start_menu.Render();
   return 0;
 }

@@ -80,12 +80,7 @@ void citybuilder::game::Game::StartGame() {
   // SelectorNode node;
   // ActionNode wander;
   // wander.action = []() { return kSuccess; };
-  // node.children.emplace_back(&wander);
-  for (int i = 0; i < 1000; ++i) {
-    NPCManager::SpawnNPC(
-        GetRandomWalkablePosition(), {1, 0},
-        static_cast<VillagerJob>(random_generator_.Random(0, jLazyBum)));
-  }
+  // node.children.emplace_back(&wander)
 
   renderer.FirstRender(tiles_, buildings, resources_, ui);
   std::vector<Vector2i> p{{20, 20}, {21, 20}, {22, 20}, {23, 20},

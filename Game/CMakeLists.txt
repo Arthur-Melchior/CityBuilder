@@ -21,6 +21,8 @@ set(SOURCES
         include/placeables/horizontal_layout.h
         src/horizontal_layout.cc
         include/npc_manager.h
+        include/start_menu.h
+        src/start_menu.cc
         src/villager.cpp
 )
 
