@@ -16,7 +16,7 @@
 class SaveManager {
 public:
   static void Save(Context& context, const std::string& file_path);
-  static std::expected<Context, std::string> Load(const std::string& file_path);
+  static std::expected<Context, std::string> TryLoad(const std::wstring& file_path);
 };
 
 #endif  // CITYBUILDER_SAVE_MANAGER_H

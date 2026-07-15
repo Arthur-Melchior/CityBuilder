@@ -54,8 +54,8 @@ void SaveManager::Save(Context& context, const std::string& file_path) {
   file << save.dump(2);
 }
 
-std::expected<Context, std::string> SaveManager::Load(
-    const std::string& file_path) {
+std::expected<Context, std::string> SaveManager::TryLoad(
+    const std::wstring& file_path) {
   std::ifstream file(file_path);
   if (!file.is_open()) {
     return std::unexpected("file not found");

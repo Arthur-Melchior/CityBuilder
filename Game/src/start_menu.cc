@@ -4,7 +4,57 @@
 
 #include "start_menu.h"
 
+#include <shobjidl.h>  // IFileOpenDialog
+#include <windows.h>
+
+#include <iostream>
+#include <string>
+
+#include "file/save_manager.h"
 #include "graphics/renderer.h"
+
+std::wstring OpenFileDialog() {
+  HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+
+  IFileOpenDialog* dialog = nullptr;
+  hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr,
+                        CLSCTX_ALL, IID_PPV_ARGS(&dialog));
+
+  if (SUCCEEDED(hr)) {
+    COMDLG_FILTERSPEC filters[] =
+    {
+      {L"Fichiers JSON", L"*.json"},
+    };
+
+    dialog->SetFileTypes(2, filters);
+    dialog->SetFileTypeIndex(1);
+    hr = dialog->Show(nullptr);
+
+    if (SUCCEEDED(hr)) {
+      IShellItem* item = nullptr;
+      hr = dialog->GetResult(&item);
+
+      if (SUCCEEDED(hr)) {
+        PWSTR path = nullptr;
+        item->GetDisplayName(SIGDN_FILESYSPATH, &path);
+
+        std::wstring result(path);
+
+        CoTaskMemFree(path);
+        item->Release();
+        dialog->Release();
+        CoUninitialize();
+
+        return result;
+      }
+    }
+
+    dialog->Release();
+  }
+
+  CoUninitialize();
+  return L"";
+}
 
 void StartMenu::Render() {
   sf::RenderWindow window(sf::VideoMode({800, 800}), "city builder",
@@ -71,6 +121,7 @@ void StartMenu::Render() {
               sf::Vector2<float>(sf::Mouse::getPosition(window)))) {
         load_game_button.setFillColor(sf::Color::Blue);
         if (event->is<sf::Event::MouseButtonPressed>()) {
+          auto save = SaveManager::TryLoad(OpenFileDialog());
           window.close();
           citybuilder::game::Game game{200, 200};
           game.StartGame();
