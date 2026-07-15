@@ -23,10 +23,10 @@ std::wstring OpenFileDialog() {
   if (SUCCEEDED(hr)) {
     COMDLG_FILTERSPEC filters[] =
     {
-      {L"Fichiers JSON", L"*.json"},
+      {L"Fichiers JSON", L"*.json"}
     };
 
-    dialog->SetFileTypes(2, filters);
+    dialog->SetFileTypes(1, filters);
     dialog->SetFileTypeIndex(1);
     hr = dialog->Show(nullptr);
 

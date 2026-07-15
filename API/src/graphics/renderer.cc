@@ -106,7 +106,7 @@ void Renderer::FirstRender(const std::span<game::Tile> background,
   }
 
   states_.texture = &tile_sheet_;
-  world_view_ = sf::View({0, 0}, view_port_size_);
+  world_view_ = sf::View({1500, 1500}, view_port_size_);
   ui_view_ =
       sf::View(sf::FloatRect{{0.f, 0.f}, sf::Vector2f(window_.getSize())});
 }
