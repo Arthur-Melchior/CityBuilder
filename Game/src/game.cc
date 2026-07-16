@@ -60,8 +60,6 @@ void citybuilder::game::Game::InitializeGameRenderer() {
     renderer.SetHologramType(Miner);
   };
   horizontal_layout.AddChild(d1);
-  horizontal_layout.AddChild(d2);
-  horizontal_layout.AddChild(d3);
 
   VerticalLayout vertical_layout{};
   vertical_layout.display_box.position = {1920 / 2 - 150, 200};
@@ -125,6 +123,7 @@ void citybuilder::game::Game::InitializeGameRenderer() {
             auto it = resources_.begin() +
                       (villager.resource_to_find - resources_.data());
             resources_.erase(it);
+            resources_count_++;
           }
           renderer.re_ = resources_;
           villager.resource_to_find = nullptr;
@@ -137,6 +136,19 @@ void citybuilder::game::Game::InitializeGameRenderer() {
             villager.current_path, clock.getElapsedTime().asSeconds());
       }
     }
+
+    if (!first_house_added_ && resources_count_ >= 15) {
+      horizontal_layout.AddChild(d2);
+      renderer.UpdateLayout(horizontal_layout);
+      first_house_added_ = true;
+    }
+
+    if (!second_house_added_ && resources_count_ >= 50) {
+      horizontal_layout.AddChild(d3);
+      renderer.UpdateLayout(horizontal_layout);
+      second_house_added_ = true;
+    }
+
     clock.restart();
   }
 }

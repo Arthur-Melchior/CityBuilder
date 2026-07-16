@@ -97,6 +97,9 @@ class Game {
   std::vector<Tile> tiles_;
   std::vector<Resource> resources_;
   std::vector<Building> buildings_;
+  int resources_count_ = 0;
+  bool first_house_added_ = false;
+  bool second_house_added_ = false;
   RandomGenerator random_generator_{};
 };
 

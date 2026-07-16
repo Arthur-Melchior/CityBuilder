@@ -330,6 +330,14 @@ void Renderer::ChangeHologramTexture(const Vector2i text_coords) {
   hologram_texture_coords_ = text_coords;
 }
 
+void Renderer::UpdateLayout(HorizontalLayout& horizontal_layout) {
+  display_boxes_.clear();
+  display_boxes_.push_back(GenerateRendererDisplayBox(horizontal_layout.display_box));
+  for (auto& display_box : *horizontal_layout.GetChildren()) {
+    display_boxes_.push_back(GenerateRendererDisplayBox(display_box));
+  }
+}
+
 void Renderer::Close() { window_.close(); }
 
 }  // namespace citybuilder::graphics

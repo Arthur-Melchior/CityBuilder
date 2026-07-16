@@ -11,6 +11,7 @@
 #include "game.h"
 #include "placeables/building.h"
 #include "placeables/display_box.h"
+#include "placeables/horizontal_layout.h"
 #include "placeables/tile.h"
 #include "placeables/vertical_layout.h"
 #include "renderer_display_box.h"
@@ -50,6 +51,7 @@ class Renderer {
 
   template <Placeable T>
   std::vector<sf::Vertex> GenerateVertices(std::span<T>);
+  void UpdateLayout(HorizontalLayout& horizontal_layout);
 
  private:
   sf::RenderStates states_;
