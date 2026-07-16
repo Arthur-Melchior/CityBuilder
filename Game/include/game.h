@@ -10,6 +10,7 @@
 
 #include "placeables/resource.h"
 #include "placeables/tile.h"
+#include "utils/context.h"
 #include "utils/random_generator.h"
 
 namespace citybuilder::game {
@@ -21,6 +22,8 @@ class Game {
         world_size_height_(world_size_height) {}
 
   void StartGame();
+  void StartGame(const Context& context);
+  void InitializeGameRenderer();
   [[nodiscard]] std::vector<Tile> GenerateRandomTiles(int seed);
   [[nodiscard]] std::vector<Resource> GenerateRandomResources(int seed) const;
 
@@ -93,6 +96,7 @@ class Game {
   int world_size_height_;
   std::vector<Tile> tiles_;
   std::vector<Resource> resources_;
+  std::vector<Building> buildings_;
   RandomGenerator random_generator_{};
 };
 

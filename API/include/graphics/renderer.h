@@ -12,6 +12,7 @@
 #include "placeables/building.h"
 #include "placeables/display_box.h"
 #include "placeables/tile.h"
+#include "placeables/vertical_layout.h"
 #include "renderer_display_box.h"
 
 namespace citybuilder::graphics {
@@ -37,11 +38,14 @@ class Renderer {
     hologram_type_ = building_type;
   }
 
+  RendererDisplayBox GenerateRendererDisplayBox(const DisplayBox& ui_element);
   void FirstRender(std::span<game::Tile> background,
                    std::span<game::Building> buildings,
                    std::span<game::Resource> resources,
-                   std::span<DisplayBox> ui_elements);
+                   std::span<DisplayBox> ui_elements,
+                   VerticalLayout vertical_layout);
   bool Render();
+  void Close();
   std::span<game::Resource> re_;
 
   template <Placeable T>
@@ -69,8 +73,10 @@ class Renderer {
   std::vector<sf::Vertex> resources_;
   std::vector<sf::Vertex> villagers;
   std::vector<sf::Vertex> hologram_;
+  std::vector<RendererDisplayBox> pause_menu_;
   std::vector<RendererDisplayBox> display_boxes_;
   bool show_hologram_ = false;
+  bool show_pause_menu = false;
   Vector2i hologram_texture_coords_ = {0, 0};
   game::BuildingType hologram_type_;
 

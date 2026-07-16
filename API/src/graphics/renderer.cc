@@ -15,10 +15,63 @@
 
 namespace citybuilder::graphics {
 
+RendererDisplayBox Renderer::GenerateRendererDisplayBox(
+    const DisplayBox& ui_element) {
+  const float left = ui_element.position.x;
+  const float top = ui_element.position.y;
+  const float right = left + ui_element.size.x;
+  const float bottom = top + ui_element.size.y;
+
+  const auto tex_left = ui_element.texture_coords.x * texture_size_.x + 0.5f;
+  const auto tex_right = tex_left + texture_size_.x - 1.0f;
+  const auto tex_top = ui_element.texture_coords.y * texture_size_.y + 0.5f;
+  const auto tex_bottom = tex_top + texture_size_.y - 1.0f;
+
+  const sf::Vertex top_left_vertex{
+      {left, top}, sf::Color::White, {tex_left, tex_top}};
+  const sf::Vertex top_right_vertex{
+      {right, top}, sf::Color::White, {tex_right, tex_top}};
+  const sf::Vertex bottom_right_vertex{
+      {right, bottom}, sf::Color::White, {tex_right, tex_bottom}};
+  const sf::Vertex bottom_left_vertex{
+      {left, bottom}, sf::Color::White, {tex_left, tex_bottom}};
+
+  sf::Text text{font_, ui_element.text, ui_element.font_size};
+
+  const auto text_bounds = text.getLocalBounds();
+  text.setOrigin({
+      text_bounds.position.x + text_bounds.size.x / 2.f,
+      text_bounds.position.y + text_bounds.size.y / 2.f,
+  });
+  text.setPosition({
+      ui_element.position.x + ui_element.size.x / 2.f,
+      ui_element.position.y + ui_element.size.y / 2.f,
+  });
+
+  text.setFillColor(sf::Color::Black);
+  const Vector2f pos = {static_cast<float>(ui_element.position.x),
+                        static_cast<float>(ui_element.position.y)};
+  const Vector2f size = {static_cast<float>(ui_element.size.x),
+                         static_cast<float>(ui_element.size.y)};
+  RendererDisplayBox rdb{pos,
+                         size,
+                         ui_element.texture_coords,
+                         text,
+                         ui_element.is_button,
+                         ui_element.action};
+  rdb.vertices.push_back(top_left_vertex);
+  rdb.vertices.push_back(top_right_vertex);
+  rdb.vertices.push_back(bottom_right_vertex);
+  rdb.vertices.push_back(top_left_vertex);
+  rdb.vertices.push_back(bottom_left_vertex);
+  rdb.vertices.push_back(bottom_right_vertex);
+  return rdb;
+}
 void Renderer::FirstRender(const std::span<game::Tile> background,
                            const std::span<game::Building> buildings,
                            const std::span<game::Resource> resources,
-                           const std::span<DisplayBox> ui_elements) {
+                           const std::span<DisplayBox> ui_elements,
+                           VerticalLayout vertical_layout) {
   if (!tile_sheet_.loadFromFile(
           "_assets/tile_sheets/complete_tile_sheet.png")) {
     return;
@@ -54,55 +107,13 @@ void Renderer::FirstRender(const std::span<game::Tile> background,
   foreground_tiles_ = GenerateVertices(buildings);
   resources_ = GenerateVertices(resources);
   for (auto& ui_element : ui_elements) {
-    const float left = ui_element.position.x;
-    const float top = ui_element.position.y;
-    const float right = left + ui_element.size.x;
-    const float bottom = top + ui_element.size.y;
+    display_boxes_.push_back(GenerateRendererDisplayBox(ui_element));
+  }
 
-    const auto tex_left = ui_element.texture_coords.x * texture_size_.x + 0.5f;
-    const auto tex_right = tex_left + texture_size_.x - 1.0f;
-    const auto tex_top = ui_element.texture_coords.y * texture_size_.y + 0.5f;
-    const auto tex_bottom = tex_top + texture_size_.y - 1.0f;
-
-    const sf::Vertex top_left_vertex{
-        {left, top}, sf::Color::White, {tex_left, tex_top}};
-    const sf::Vertex top_right_vertex{
-        {right, top}, sf::Color::White, {tex_right, tex_top}};
-    const sf::Vertex bottom_right_vertex{
-        {right, bottom}, sf::Color::White, {tex_right, tex_bottom}};
-    const sf::Vertex bottom_left_vertex{
-        {left, bottom}, sf::Color::White, {tex_left, tex_bottom}};
-
-    sf::Text text{font_, ui_element.text, ui_element.font_size};
-
-    const auto text_bounds = text.getLocalBounds();
-    text.setOrigin({
-        text_bounds.position.x + text_bounds.size.x / 2.f,
-        text_bounds.position.y + text_bounds.size.y / 2.f,
-    });
-    text.setPosition({
-        ui_element.position.x + ui_element.size.x / 2.f,
-        ui_element.position.y + ui_element.size.y / 2.f,
-    });
-
-    text.setFillColor(sf::Color::Black);
-    const Vector2f pos = {static_cast<float>(ui_element.position.x),
-                          static_cast<float>(ui_element.position.y)};
-    const Vector2f size = {static_cast<float>(ui_element.size.x),
-                           static_cast<float>(ui_element.size.y)};
-    RendererDisplayBox rdb{pos,
-                           size,
-                           ui_element.texture_coords,
-                           text,
-                           ui_element.is_button,
-                           ui_element.action};
-    rdb.vertices.push_back(top_left_vertex);
-    rdb.vertices.push_back(top_right_vertex);
-    rdb.vertices.push_back(bottom_right_vertex);
-    rdb.vertices.push_back(top_left_vertex);
-    rdb.vertices.push_back(bottom_left_vertex);
-    rdb.vertices.push_back(bottom_right_vertex);
-    display_boxes_.push_back(rdb);
+  pause_menu_.push_back(
+      GenerateRendererDisplayBox(vertical_layout.display_box));
+  for (auto& child : *vertical_layout.GetChildren()) {
+    pause_menu_.push_back(GenerateRendererDisplayBox(child));
   }
 
   states_.texture = &tile_sheet_;
@@ -141,10 +152,23 @@ bool Renderer::Render() {
       world_view_.setSize(size * current_zoom_);
     }
 
+    if (const auto* keyPressed = event -> getIf<sf::Event::KeyPressed>()) {
+      if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
+        show_pause_menu = !show_pause_menu;
+      }
+    }
+
     for (auto& display_box : display_boxes_) {
       display_box.HandleEvents(event, window_, ui_view_);
     }
+
+    if (show_pause_menu) {
+      for (auto& display_box : pause_menu_) {
+        display_box.HandleEvents(event, window_, ui_view_);
+      }
+    }
   }
+
 
   // to move the map on middle mouse drag
   if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle)) {
@@ -213,26 +237,34 @@ bool Renderer::Render() {
 
   window_.clear(sf::Color::Black);
 
-  window_.setView(world_view_);
-  window_.draw(background_tiles_.data(), background_tiles_.size(),
-               sf::PrimitiveType::Triangles, states_);
-  window_.draw(foreground_tiles_.data(), foreground_tiles_.size(),
-               sf::PrimitiveType::Triangles, states_);
-  window_.draw(resources_.data(), resources_.size(),
-               sf::PrimitiveType::Triangles, states_);
-  window_.draw(villagers.data(), villagers.size(), sf::PrimitiveType::Triangles,
-               states_);
-  if (show_hologram_) {
-    window_.draw(hologram_.data(), hologram_.size(),
+  if (show_pause_menu) {
+    for (auto& display_box : pause_menu_) {
+      window_.draw(display_box.vertices.data(), display_box.vertices.size(),
+                   sf::PrimitiveType::Triangles);
+      window_.draw(display_box.text);
+    }
+  } else {
+    window_.setView(world_view_);
+    window_.draw(background_tiles_.data(), background_tiles_.size(),
                  sf::PrimitiveType::Triangles, states_);
-  }
-
-  window_.setView(ui_view_);
-
-  for (auto& display_box : display_boxes_) {
-    window_.draw(display_box.vertices.data(), display_box.vertices.size(),
+    window_.draw(foreground_tiles_.data(), foreground_tiles_.size(),
                  sf::PrimitiveType::Triangles, states_);
-    window_.draw(display_box.text);
+    window_.draw(resources_.data(), resources_.size(),
+                 sf::PrimitiveType::Triangles, states_);
+    window_.draw(villagers.data(), villagers.size(),
+                 sf::PrimitiveType::Triangles, states_);
+    if (show_hologram_) {
+      window_.draw(hologram_.data(), hologram_.size(),
+                   sf::PrimitiveType::Triangles, states_);
+    }
+
+    window_.setView(ui_view_);
+
+    for (auto& display_box : display_boxes_) {
+      window_.draw(display_box.vertices.data(), display_box.vertices.size(),
+                   sf::PrimitiveType::Triangles, states_);
+      window_.draw(display_box.text);
+    }
   }
 
   window_.display();
@@ -297,5 +329,7 @@ void Renderer::ChangeHologramTexture(const Vector2i text_coords) {
   hologram_[5].texCoords.y = tex_pos_y + texture_size_.y;
   hologram_texture_coords_ = text_coords;
 }
+
+void Renderer::Close() { window_.close(); }
 
 }  // namespace citybuilder::graphics

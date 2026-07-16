@@ -80,9 +80,6 @@ std::expected<Context, std::string> SaveManager::TryLoad(
     context.tiles.push_back(t);
   }
 
-  if (data["buildings"].empty()) {
-    return std::unexpected("no buildings found in save");
-  }
   for (const auto& building : data["buildings"]) {
     auto x = building["x"].get<int>();
     auto y = building["y"].get<int>();
@@ -105,9 +102,6 @@ std::expected<Context, std::string> SaveManager::TryLoad(
     context.markets.push_back(m);
   }
 
-  if (data["villagers"].empty()) {
-    return std::unexpected("no villagers found in save");
-  }
   for (auto& villager : data["villagers"]) {
     auto x = villager["x"].get<int>();
     auto y = villager["y"].get<int>();

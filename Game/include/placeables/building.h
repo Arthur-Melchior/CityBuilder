@@ -38,7 +38,7 @@ class Building {
 };
 
 inline void Building::OnCreate() const {
-  for (int i = 0; i < 5; ++i) {
+  for (int i = 0; i < 1; ++i) {
     if (building_type == Woodcutter) {
       NPCManager::SpawnNPC(position, {1, 0}, jWoodcutter);
     } else if (building_type == Farmer) {

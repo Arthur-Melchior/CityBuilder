@@ -13,37 +13,28 @@
 #include "behaviour_tree/action_node.h"
 #include "behaviour_tree/behaviour_tree_node.h"
 #include "behaviour_tree/selector_node.h"
+#include "file_dialog.h"
 #include "graphics/renderer_display_box.h"
 #include "pathfinding/pathfinder.h"
 #include "placeables/building.h"
 #include "placeables/display_box.h"
 #include "placeables/horizontal_layout.h"
 #include "placeables/placeable.h"
+#include "placeables/vertical_layout.h"
 #include "utils/context.h"
 
-void citybuilder::game::Game::StartGame() {
-  tiles_ = GenerateRandomTiles(2);
-  resources_ = GenerateRandomResources(2);
+void citybuilder::game::Game::StartGame(const Context& context) {
+  tiles_ = context.tiles;
+  resources_ = context.resources;
+  buildings_ = context.buildings;
+  InitializeGameRenderer();
+}
+
+void citybuilder::game::Game::InitializeGameRenderer() {
   graphics::Renderer renderer(1920, 1080, "City Builder", false);
   sf::Clock clock{};
   Pathfinder pathfinder{tiles_, world_size_width_, world_size_height_};
   // auto path = pathfinder.FindPath({0, 0}, {100, 100});
-
-  Building b{{0, 0}, {5, 10}, {5, 2}, Cantina};
-
-  const int width = static_cast<int>(tiles_.size()) / world_size_width_ - 1;
-  const int height = static_cast<int>(tiles_.size()) / world_size_height_ - 1;
-
-  b.position = {random_generator_.Random(0, width),
-                random_generator_.Random(0, height)};
-
-  while (!CanPlace(b, tiles_, world_size_width_)) {
-    b.position = {random_generator_.Random(0, width),
-                  random_generator_.Random(0, height)};
-  }
-
-  Place(b, tiles_, world_size_width_);
-  std::vector buildings{b};
 
   HorizontalLayout horizontal_layout{};
   horizontal_layout.display_box.position = {300, 1080 - 200};
@@ -72,17 +63,42 @@ void citybuilder::game::Game::StartGame() {
   horizontal_layout.AddChild(d2);
   horizontal_layout.AddChild(d3);
 
+  VerticalLayout vertical_layout{};
+  vertical_layout.display_box.position = {1920 / 2 - 150, 200};
+  vertical_layout.display_box.size = {300, 1080 - 400};
+  vertical_layout.display_box.texture_coords = {8, 10};
+  vertical_layout.display_box.is_button = false;
+
+  DisplayBox save_button{{0, 0}, {8, 10}, {200, 100}, "Save", 20, true};
+  save_button.action = [&]() -> void {
+    Context context{};
+    context.tiles = tiles_;
+    context.buildings = buildings_;
+    context.resources = resources_;
+    context.villagers = *NPCManager::GetVillagers();
+    SaveManager::Save(context, "save.json");
+  };
+  DisplayBox load_button{{0, 0}, {8, 10}, {200, 100}, "Load", 20, true};
+  load_button.action = [&]() -> void {
+    const auto file = FileDialoger::OpenFileDialog();
+    if (const auto save = SaveManager::TryLoad(file)) {
+      renderer.Close();
+      StartGame(save.value());
+    }
+  };
+  DisplayBox quit_button{{0, 0}, {8, 10}, {200, 100}, "Quit", 20, true};
+  quit_button.action = [&]() -> void { exit(0); };
+
+  vertical_layout.AddChild(save_button);
+  vertical_layout.AddChild(load_button);
+  vertical_layout.AddChild(quit_button);
+
   std::vector ui{horizontal_layout.display_box};
   for (auto& child : *horizontal_layout.GetChildren()) {
     ui.push_back(child);
   }
 
-  // SelectorNode node;
-  // ActionNode wander;
-  // wander.action = []() { return kSuccess; };
-  // node.children.emplace_back(&wander)
-
-  renderer.FirstRender(tiles_, buildings, resources_, ui);
+  renderer.FirstRender(tiles_, buildings_, resources_, ui, vertical_layout);
   std::vector<Vector2i> p{{20, 20}, {21, 20}, {22, 20}, {23, 20},
                           {24, 20}, {25, 20}, {26, 20}, {27, 20}};
   while (renderer.Render()) {
@@ -92,7 +108,9 @@ void citybuilder::game::Game::StartGame() {
             villager.current_path, clock.getElapsedTime().asSeconds());
       } else {
         if (villager.resource_to_find == nullptr) {
-          auto resource_to_find = villager.job == jFarmer ? Carrot : villager.job == jMiner ? Pumpkin : Egg;
+          auto resource_to_find = villager.job == jFarmer  ? Carrot
+                                  : villager.job == jMiner ? Pumpkin
+                                                           : Egg;
           if (auto closest_resource = GetClosestResourcePosition(
                   villager.position, resource_to_find)) {
             villager.resource_to_find = closest_resource;
@@ -121,6 +139,11 @@ void citybuilder::game::Game::StartGame() {
     }
     clock.restart();
   }
+}
+void citybuilder::game::Game::StartGame() {
+  tiles_ = GenerateRandomTiles(random_generator_.Random(0, 1000000));
+  resources_ = GenerateRandomResources(random_generator_.Random(0, 1000000));
+  InitializeGameRenderer();
 }
 
 std::vector<citybuilder::game::Tile>

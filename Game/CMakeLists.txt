@@ -24,6 +24,10 @@ set(SOURCES
         include/start_menu.h
         src/start_menu.cc
         src/villager.cpp
+        include/placeables/vertical_layout.h
+        src/vertical_layout.cc
+        include/file_dialog.h
+        src/file_dialog.cc
 )
 
 add_library(Game STATIC ${SOURCES})
